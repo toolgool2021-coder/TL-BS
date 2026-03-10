@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TL BS - Multiplayer</title>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            background: #004dc0; 
+            font-family: 'Arial Black', sans-serif; 
+            overflow: hidden; 
+            color: white; 
+            touch-action: none; 
+        }
+        canvas { 
+            display: block; 
+            background: #2e7d32; 
+        }
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #004dc0, #0066ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            pointer-events: all;
+        }
+        #menu.hidden { display: none; }
+        #menu h1 { font-size: 48px; margin: 20px; color: #ffff00; }
+        .btn {
+            background: #00ff00;
+            color: #000;
+            border: 3px solid #000;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .btn:active { transform: scale(0.95); }
+        #status { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            background: rgba(0,0,0,0.8); 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            z-index: 50;
+            font-size: 14px;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+        }
+        #gameId { 
+            position: absolute; 
+            top: 80px; 
+            left: 10px; 
+            background: rgba(0,0,0,0.8); 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            z-index: 50; 
+            font-size: 12px;
+            border: 2px solid #ffff00;
+            max-width: 250px;
+            word-wrap: break-word;
+            color: #ffff00;
+        }
+        #playerStats {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 50;
+            border: 2px solid #ff00ff;
+        }
+        .stat-bar {
+            width: 150px;
+            height: 15px;
+            background: #333;
+            border: 2px solid white;
+            border-radius: 4px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        .stat-fill {
+            height: 100%;
+            background: #00ff00;
+            transition: width 0.2s;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 50;
+            border: 2px solid #00ffff;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu">
+    <h1>⚔️ TL BS MULTIPLAYER ⚔️</h1>
+    <div>
+        <input type="text" id="brawlerSelect" placeholder="Выберите бойца (Colt, Shelly и т.д.)" value="Colt" style="padding: 10px; font-size: 16px; border-radius: 5px; border: none; width: 300px;">
+    </div>
+    <div style="margin-top: 20px; font-size: 12px; color: #ffff00; max-width: 400px;">
+        <p>Доступные бойцы:</p>
+        <p>Shelly, Colt, El_Primo, Barley, Brock, Dynamike, Mortis, Stu, Darryl, Nani, Max, Crow, Tara, Gene, Bibi, Bull, Jessie, Bo, Tick, Rosa</p>
+    </div>
+    <button class="btn" onclick="createGame()">➕ СОЗДАТЬ ИГРУ</button>
+    <button class="btn" onclick="joinGamePrompt()">🔗 ПРИСОЕДИНИТЬСЯ</button>
+</div>
+
+<div id="ui">
+    <div id="status">⏳ Загрузка...</div>
+    <div id="gameId"></div>
+    <div id="playerStats">
+        <div style="font-weight: bold; margin-bottom: 10px;">👤 ИГРОК</div>
+        <div id="playerName" style="font-size: 12px; margin-bottom: 5px;">-</div>
+        <div>HP:</div>
+        <div class="stat-bar"><div class="stat-fill" id="playerHpBar" style="width: 100%"></div></div>
+        <div style="margin-top: 15px; font-weight: bold;">👹 ВРАГ</div>
+        <div id="enemyName" style="font-size: 12px; margin-bottom: 5px;">-</div>
+        <div>HP:</div>
+        <div class="stat-bar"><div class="stat-fill" id="enemyHpBar" style="width: 100%"></div></div>
+    </div>
+    <div id="controls">
+        👆 Свайп влево = ДВИЖЕНИЕ | 👆 Свайп вправо = АТАКА<br>
+        🎯 Нажми на врага чтобы атаковать | ⚔️ Побейте друг друга!
+    </div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+    // Firebase config
+    const firebaseConfig = {
+        apiKey: "AIzaSyAb2_n8alGnm2v574Yaad2e53kyyHuPaIM",
+        authDomain: "tl-bs-5899b.firebaseapp.com",
+        projectId: "tl-bs-5899b",
+        storageBucket: "tl-bs-5899b.firebasestorage.app",
+        messagingSenderId: "300221375469",
+        appId: "1:300221375469:web:9cd480c765c7312e223de4",
+        databaseURL: "https://tl-bs-5899b-default-rtdb.firebaseio.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Персонажи
+    const BRAWLERS = {
+        Shelly: { color: '#bc42f5', speed: 4, reload: 1500, maxAmmo: 3, maxHp: 4200 },
+        Colt: { color: '#f54242', speed: 4.5, reload: 1300, maxAmmo: 3, maxHp: 3600 },
+        El_Primo: { color: '#3498db', speed: 3.5, reload: 1000, maxAmmo: 3, maxHp: 5500 },
+        Barley: { color: '#95a5a6', speed: 3.8, reload: 1800, maxAmmo: 3, maxHp: 3000 },
+        Brock: { color: '#34495e', speed: 4, reload: 2000, maxAmmo: 3, maxHp: 3200 },
+        Dynamike: { color: '#e67e22', speed: 3.8, reload: 1800, maxAmmo: 3, maxHp: 3400 },
+        Mortis: { color: '#8e44ad', speed: 4.8, reload: 2400, maxAmmo: 3, maxHp: 3600 },
+        Stu: { color: '#e74c3c', speed: 4.5, reload: 1400, maxAmmo: 2, maxHp: 3200 },
+        Darryl: { color: '#7f8c8d', speed: 4, reload: 1300, maxAmmo: 3, maxHp: 4000 },
+        Nani: { color: '#f1c40f', speed: 3.9, reload: 2100, maxAmmo: 3, maxHp: 3200 },
+        Max: { color: '#ffeb3b', speed: 5.5, reload: 1100, maxAmmo: 4, maxHp: 3200 },
+        Crow: { color: '#2ecc71', speed: 5.2, reload: 1400, maxAmmo: 3, maxHp: 3200 },
+        Tara: { color: '#e91e63', speed: 4, reload: 2000, maxAmmo: 3, maxHp: 3600 },
+        Gene: { color: '#9c27b0', speed: 4, reload: 1800, maxAmmo: 3, maxHp: 3400 },
+        Bibi: { color: '#3f51b5', speed: 4.5, reload: 1200, maxAmmo: 3, maxHp: 4200 },
+        Bull: { color: '#5d4037', speed: 4, reload: 1400, maxAmmo: 3, maxHp: 4800 },
+        Jessie: { color: '#ff5722', speed: 4, reload: 1800, maxAmmo: 3, maxHp: 3200 },
+        Bo: { color: '#2e7d32', speed: 4, reload: 1700, maxAmmo: 3, maxHp: 3400 },
+        Tick: { color: '#455a64', speed: 3.5, reload: 2200, maxAmmo: 3, maxHp: 3200 },
+        Rosa: { color: '#4caf50', speed: 4, reload: 1000, maxAmmo: 3, maxHp: 4600 }
+    };
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const gameIdEl = document.getElementById('gameId');
+    const menuEl = document.getElementById('menu');
+
+    let gameId = null;
+    let playerId = null;
+    let isPlayer1 = false;
+    let gameActive = false;
+
+    let p = { 
+        x: 0, y: 0, scale: 1, hp: 3600, maxHp: 3600, 
+        brawler: 'Colt', ultCharge: 0, ammo: 3, reloadTimer: 0,
+        isFlying: false, speedMult: 1
+    };
+    let enemy = { 
+        x: 0, y: 0, hp: 3600, maxHp: 3600, 
+        brawler: 'Shelly', ultCharge: 0
+    };
+    let bullets = [];
+    let zones = [];
+
+    let joyL = { active: false, x: 100, y: 0, cx: 100, cy: 0, id: null };
+    let joyR = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
+
+    function generateGameId() {
+        return 'game_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function createGame() {
+        let brawler = document.getElementById('brawlerSelect').value.trim();
+        if (!brawler || !BRAWLERS[brawler]) {
+            alert('Выберите правильное имя бойца!');
+            return;
+        }
+        p.brawler = brawler;
+        const stats = BRAWLERS[p.brawler];
+        p.maxHp = stats.maxHp;
+        p.hp = stats.maxHp;
+
+        gameId = generateGameId();
+        playerId = 'p1_' + Date.now();
+        isPlayer1 = true;
+        
+        menuEl.classList.add('hidden');
+        statusEl.innerText = "⏳ Ожидание игрока...\nID: " + gameId;
+        gameIdEl.innerHTML = `<strong>📋 ID ИГРЫ:</strong><br><span style="color:#ffff00; font-weight:bold; font-size:14px;">${gameId}</span><br><br><strong>Отправьте это соопернику!</strong>`;
+        
+        db.ref('games/' + gameId).set({
+            player1: playerId,
+            player1Brawler: p.brawler,
+            player1x: 0,
+            player1y: 0,
+            player1hp: p.maxHp,
+            player1ultCharge: 0,
+            player2: null,
+            player2Brawler: 'Shelly',
+            player2x: 0,
+            player2y: 0,
+            player2hp: BRAWLERS['Shelly'].maxHp,
+            player2ultCharge: 0,
+            status: 'waiting'
+        });
+
+        db.ref('games/' + gameId + '/player2').on('value', (snap) => {
+            if (snap.val() && gameActive === false) {
+                db.ref('games/' + gameId).once('value', (gameSnap) => {
+                    const gameData = gameSnap.val();
+                    enemy.brawler = gameData.player2Brawler || 'Shelly';
+                    enemy.maxHp = BRAWLERS[enemy.brawler].maxHp;
+                    enemy.hp = enemy.maxHp;
+                });
+                gameActive = true;
+                statusEl.innerText = "▶️ Игра началась!";
+                gameIdEl.innerHTML = "";
+                startGame();
+            }
+        });
+    }
+
+    function joinGamePrompt() {
+        let brawler = document.getElementById('brawlerSelect').value.trim();
+        if (!brawler || !BRAWLERS[brawler]) {
+            alert('Выберите правильное имя бойца!');
+            return;
+        }
+        p.brawler = brawler;
+        const stats = BRAWLERS[p.brawler];
+        p.maxHp = stats.maxHp;
+        p.hp = stats.maxHp;
+
+        gameId = prompt("Введите ID игры:");
+        if (!gameId) return;
+
+        playerId = 'p2_' + Date.now();
+        isPlayer1 = false;
+
+        db.ref('games/' + gameId).once('value', (snap) => {
+            if (snap.exists()) {
+                const gameData = snap.val();
+                if (gameData.player2) {
+                    alert("В этой игре уже два игрока!");
+                    return;
+                }
+                
+                enemy.brawler = gameData.player1Brawler || 'Shelly';
+                enemy.maxHp = BRAWLERS[enemy.brawler].maxHp;
+                enemy.hp = enemy.maxHp;
+
+                db.ref('games/' + gameId).update({
+                    player2: playerId,
+                    player2Brawler: p.brawler,
+                    status: 'active'
+                });
+                
+                menuEl.classList.add('hidden');
+                gameActive = true;
+                statusEl.innerText = "▶️ Игра началась!";
+                gameIdEl.innerHTML = "";
+                startGame();
+            } else {
+                alert("Игра не найдена!");
+            }
+        });
+    }
+
+    function startGame() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        if (isPlayer1) {
+            p.x = canvas.width / 2;
+            p.y = canvas.height - 120;
+            enemy.x = canvas.width / 2;
+            enemy.y = 120;
+        } else {
+            p.x = canvas.width / 2;
+            p.y = 120;
+            enemy.x = canvas.width / 2;
+            enemy.y = canvas.height - 120;
+        }
+
+        joyL.x = 100;
+        joyL.y = canvas.height - 120;
+        joyR.x = canvas.width - 100;
+        joyR.y = canvas.height - 130;
+
+        const playerXKey = isPlayer1 ? 'player1x' : 'player2x';
+        const playerYKey = isPlayer1 ? 'player1y' : 'player2y';
+        const playerHpKey = isPlayer1 ? 'player1hp' : 'player2hp';
+
+        // Синхронизируем каждые 50мс
+        setInterval(() => {
+            if (gameActive) {
+                db.ref('games/' + gameId).update({
+                    [playerXKey]: Math.round(p.x),
+                    [playerYKey]: Math.round(p.y),
+                    [playerHpKey]: Math.round(p.hp)
+                });
+            }
+        }, 50);
+
+        // Получаем данные врага
+        const enemyXKey = isPlayer1 ? 'player2x' : 'player1x';
+        const enemyYKey = isPlayer1 ? 'player2y' : 'player1y';
+        const enemyHpKey = isPlayer1 ? 'player2hp' : 'player1hp';
+
+        db.ref('games/' + gameId).on('value', (snap) => {
+            if (snap.val()) {
+                const gameData = snap.val();
+                enemy.x = gameData[enemyXKey] || enemy.x;
+                enemy.y = gameData[enemyYKey] || enemy.y;
+                enemy.hp = Math.max(0, gameData[enemyHpKey] || enemy.hp);
+            }
+        });
+
+        document.getElementById('playerName').innerText = p.brawler;
+        document.getElementById('enemyName').innerText = enemy.brawler;
+
+        requestAnimationFrame(update);
+    }
+
+    function hitEnemy(dmg) {
+        enemy.hp -= dmg;
+        p.ultCharge += 10;
+        if(p.ultCharge > 100) p.ultCharge = 100;
+
+        if(enemy.hp <= 0) {
+            gameActive = false;
+            setTimeout(() => {
+                alert("🎉 ВЫ ПОБЕДИЛИ! 🎉");
+                location.reload();
+            }, 500);
+        }
+    }
+
+    function attack(angle) {
+        const stats = BRAWLERS[p.brawler];
+        
+        if (p.ammo >= 1 && p.reloadTimer <= 0) {
+            p.ammo -= 1;
+            p.reloadTimer = stats.reload;
+
+            switch(p.brawler) {
+                case 'Shelly':
+                    for(let i=-1; i<=1; i++) spawnBullet(angle+i*0.2, 12, 35);
+                    break;
+                case 'Colt':
+                    spawnBullet(angle, 15, 45);
+                    break;
+                case 'Bull':
+                    for(let i=-2; i<=2; i++) spawnBullet(angle+i*0.15, 13, 25);
+                    break;
+                default:
+                    spawnBullet(angle, 12, 40);
+            }
+        }
+    }
+
+    function spawnBullet(angle, speed, life, size=8) {
+        bullets.push({
+            x: p.x,
+            y: p.y,
+            vx: Math.cos(angle)*speed,
+            vy: Math.sin(angle)*speed,
+            life,
+            size
+        });
+    }
+
+    window.addEventListener('touchstart', e => {
+        for(let t of e.changedTouches) {
+            let tx = t.clientX, ty = t.clientY;
+            if(tx < canvas.width/2) {
+                joyL.id = t.identifier;
+                joyL.active = true;
+                joyL.cx = tx;
+                joyL.cy = ty;
+            } else {
+                joyR.id = t.identifier;
+                joyR.active = true;
+                joyR.cx = tx;
+                joyR.cy = ty;
+            }
+        }
+    });
+
+    window.addEventListener('touchmove', e => {
+        for(let t of e.touches) {
+            if(t.identifier === joyL.id) {
+                joyL.cx = t.clientX;
+                joyL.cy = t.clientY;
+            }
+            if(t.identifier === joyR.id) {
+                joyR.cx = t.clientX;
+                joyR.cy = t.clientY;
+            }
+        }
+    });
+
+    window.addEventListener('touchend', e => {
+        for(let t of e.changedTouches) {
+            if(t.identifier === joyL.id) {
+                joyL.active = false;
+            }
+            if(t.identifier === joyR.id) {
+                let dx = joyR.cx - joyR.x;
+                let dy = joyR.cy - joyR.y;
+                if(Math.hypot(dx,dy) > 30) {
+                    attack(Math.atan2(dy,dx));
+                }
+                joyR.active = false;
+            }
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        let angle = Math.atan2(e.clientY - p.y, e.clientX - p.x);
+        attack(angle);
+    });
+
+    function update() {
+        if(!gameActive) return;
+
+        const stats = BRAWLERS[p.brawler];
+
+        if(p.reloadTimer > 0) p.reloadTimer--;
+        if(p.ammo < stats.maxAmmo) p.ammo += 1/(stats.reload/16.6);
+
+        if(joyL.active) {
+            let dx = joyL.cx - joyL.x;
+            let dy = joyL.cy - joyL.y;
+            let dist = Math.hypot(dx, dy);
+            if(dist > 5) {
+                p.x += (dx/dist) * stats.speed;
+                p.y += (dy/dist) * stats.speed;
+            }
+        }
+
+        p.x = Math.max(30, Math.min(canvas.width-30, p.x));
+        p.y = Math.max(30, Math.min(canvas.height-30, p.y));
+
+        // Обновляем пули
+        bullets.forEach((b, i) => {
+            b.x += b.vx;
+            b.y += b.vy;
+            b.life--;
+
+            if(b.life <= 0 || b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
+                bullets.splice(i, 1);
+            }
+
+            if(Math.hypot(b.x-enemy.x, b.y-enemy.y) < 35) {
+                hitEnemy(400);
+                bullets.splice(i, 1);
+            }
+        });
+
+        updateUI();
+        draw();
+        requestAnimationFrame(update);
+    }
+
+    function updateUI() {
+        document.getElementById('playerHpBar').style.width = Math.max(0, (p.hp/p.maxHp)*100) + '%';
+        document.getElementById('enemyHpBar').style.width = Math.max(0, (enemy.hp/enemy.maxHp)*100) + '%';
+    }
+
+    function draw() {
+        ctx.fillStyle = "#2e7d32";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Пули
+        ctx.fillStyle = "white";
+        bullets.forEach(b => {
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+            ctx.fill();
+        });
+
+        // Враг
+        ctx.fillStyle = BRAWLERS[enemy.brawler].color;
+        ctx.beginPath();
+        ctx.arc(enemy.x, enemy.y, 30, 0, Math.PI*2);
+        ctx.fill();
+
+        // Игрок
+        ctx.fillStyle = BRAWLERS[p.brawler].color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 30, 0, Math.PI*2);
+        ctx.fill();
+        ctx.strokeStyle = "yellow";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Джойстики
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(joyL.x, joyL.y, 70, 0, Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(joyR.x, joyR.y, 70, 0, Math.PI*2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
+</script>
+
+</body>
+</html>
