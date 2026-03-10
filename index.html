@@ -2,266 +2,52 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TL BS - Multiplayer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TL BS Multiplayer</title>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: #004dc0; 
-            font-family: 'Arial Black', sans-serif; 
-            overflow: hidden; 
-            color: white; 
-            touch-action: none;
-            width: 100vw;
-            height: 100vh;
-        }
-        canvas { 
-            display: block; 
-            background: #2e7d32;
-            width: 100vw;
-            height: 100vh;
-        }
-        #ui {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }
-        #menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #004dc0, #0066ff);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            pointer-events: all;
-        }
-        #menu.hidden { display: none !important; }
-        #menu h1 { 
-            font-size: 48px; 
-            margin: 20px; 
-            color: #ffff00; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-        }
-        #menu-content {
-            text-align: center;
-            max-width: 500px;
-        }
-        .input-field {
-            padding: 15px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 3px solid #ffff00;
-            width: 100%;
-            margin: 10px 0;
-            background: rgba(255,255,255,0.9);
-            color: #000;
-            font-weight: bold;
-        }
-        .btn {
-            background: #00ff00;
-            color: #000;
-            border: 3px solid #000;
-            padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin: 10px;
-            font-weight: bold;
-            box-shadow: 0 4px #00cc00;
-            transition: all 0.1s;
-        }
-        .btn:active { 
-            transform: translateY(4px);
-            box-shadow: 0 0 #00cc00;
-        }
-        .brawler-list {
-            color: #ffff00;
-            font-size: 12px;
-            margin: 20px 0;
-            text-align: left;
-            max-height: 150px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.5);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        #status { 
-            position: fixed; 
-            top: 10px; 
-            left: 10px; 
-            background: rgba(0,0,0,0.9); 
-            padding: 15px 20px; 
-            border-radius: 8px; 
-            z-index: 50;
-            font-size: 14px;
-            border: 3px solid #00ff00;
-            color: #00ff00;
-            pointer-events: all;
-        }
-        #gameId { 
-            position: fixed; 
-            top: 100px; 
-            left: 10px; 
-            background: rgba(0,0,0,0.9); 
-            padding: 15px;
-            border-radius: 8px; 
-            z-index: 50; 
-            font-size: 13px;
-            border: 3px solid #ffff00;
-            max-width: 280px;
-            word-break: break-all;
-            color: #ffff00;
-            pointer-events: all;
-        }
-        #playerStats {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.9);
-            padding: 15px;
-            border-radius: 8px;
-            z-index: 50;
-            border: 3px solid #ff00ff;
-            font-size: 13px;
-            pointer-events: all;
-        }
-        .stat-bar {
-            width: 180px;
-            height: 18px;
-            background: #333;
-            border: 2px solid white;
-            border-radius: 4px;
-            margin: 5px 0;
-            overflow: hidden;
-        }
-        .stat-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00ff00, #ffff00);
-            transition: width 0.2s;
-        }
-        .stat-fill.enemy {
-            background: linear-gradient(90deg, #ff0000, #ff6600);
-        }
-        #controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            padding: 12px 20px;
-            border-radius: 12px;
-            z-index: 50;
-            border: 3px solid #00ffff;
-            text-align: center;
-            font-size: 11px;
-            pointer-events: all;
-        }
-        .hud-element {
-            color: #ffff00;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        #ammo-display {
-            position: fixed;
-            bottom: 80px;
-            left: 20px;
-            background: rgba(0,0,0,0.8);
-            padding: 10px;
-            border-radius: 8px;
-            border: 2px solid #ffaa00;
-            z-index: 50;
-            pointer-events: all;
-        }
-        .ammo-cell {
-            display: inline-block;
-            width: 20px;
-            height: 10px;
-            background: #555;
-            border: 1px solid #fff;
-            margin: 2px;
-            border-radius: 3px;
-        }
-        .ammo-fill {
-            width: 100%;
-            height: 100%;
-            background: #ffaa00;
-        }
-        .notification {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
-            padding: 30px;
-            border-radius: 15px;
-            border: 3px solid #ffff00;
-            z-index: 999;
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #ffff00;
-            display: none;
-            pointer-events: all;
-        }
+        * { margin: 0; padding: 0; }
+        body { background: #004dc0; font-family: Arial; color: white; overflow: hidden; }
+        canvas { display: block; width: 100vw; height: 100vh; background: #2e7d32; }
+        #ui { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+        #menu { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #004dc0, #0066ff); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        #menu.hidden { display: none; }
+        #menu h1 { font-size: 48px; color: #ffff00; margin: 20px; }
+        input { padding: 10px; font-size: 16px; width: 300px; margin: 10px; border-radius: 5px; border: 2px solid #ffff00; }
+        button { padding: 12px 30px; font-size: 16px; margin: 10px; background: #00ff00; border: 2px solid #000; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:active { transform: scale(0.95); }
+        #status { position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 5px; border: 2px solid #00ff00; font-size: 12px; z-index: 50; }
+        #gameId { position: fixed; top: 80px; left: 10px; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 5px; border: 2px solid #ffff00; font-size: 12px; z-index: 50; }
+        #stats { position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 5px; border: 2px solid #ff00ff; font-size: 12px; z-index: 50; }
+        .bar { width: 150px; height: 12px; background: #333; border: 1px solid #fff; margin: 3px 0; overflow: hidden; }
+        .bar-fill { height: 100%; background: #00ff00; }
     </style>
 </head>
 <body>
 
 <div id="menu">
-    <h1>⚔️ TL BS MULTIPLAYER ⚔️</h1>
-    <div id="menu-content">
-        <div>
-            <label style="font-size: 16px; color: #ffff00;">Выберите бойца:</label>
-            <input type="text" id="brawlerSelect" class="input-field" placeholder="Например: Colt" value="Colt">
-        </div>
-        <div class="brawler-list">
-            <strong>📚 Доступные бойцы:</strong><br>
-            Shelly, Colt, El_Primo, Barley, Brock, Dynamike, Mortis, Stu, Darryl, Nani, Max, Crow, Tara, Gene, Bibi, Bull, Jessie, Bo, Tick, Rosa
-        </div>
-        <button class="btn" onclick="createGame()">➕ СОЗДАТЬ ИГРУ</button>
-        <button class="btn" onclick="joinGamePrompt()">🔗 ПРИСОЕДИНИТЬСЯ</button>
+    <h1>⚔️ TL BS ⚔️</h1>
+    <input type="text" id="brawler" placeholder="Бойец (Colt, Shelly...)" value="Colt">
+    <button onclick="createGame()">➕ СОЗДАТЬ</button>
+    <button onclick="joinGame()">🔗 ПРИСОЕДИНИТЬСЯ</button>
+    <div style="margin-top: 20px; font-size: 12px; text-align: center; max-width: 400px;">
+        Shelly, Colt, El_Primo, Barley, Brock, Dynamike, Mortis, Stu, Darryl, Nani, Max, Crow, Tara, Gene, Bibi, Bull, Jessie, Bo, Tick, Rosa
     </div>
 </div>
 
 <div id="ui">
     <div id="status">⏳ Загрузка...</div>
     <div id="gameId"></div>
-    <div id="playerStats">
-        <div style="color: #00ff00;">👤 ИГРОК</div>
-        <div id="playerName" style="color: #ffaa00; margin-bottom: 8px;">-</div>
-        <div>HP:</div>
-        <div class="stat-bar"><div class="stat-fill" id="playerHpBar" style="width: 100%"></div></div>
-        <div style="margin-top: 15px; color: #ff00ff;">👹 ВРАГ</div>
-        <div id="enemyName" style="color: #ff6666; margin-bottom: 8px;">-</div>
-        <div>HP:</div>
-        <div class="stat-bar"><div class="stat-fill enemy" id="enemyHpBar" style="width: 100%"></div></div>
-    </div>
-    <div id="ammo-display">
-        <div class="hud-element">🔫 БОЕПРИПАСЫ:</div>
-        <div id="ammo-container" style="margin-top: 5px;"></div>
-    </div>
-    <div id="controls">
-        👆 <strong>ЛЕВЫЙ СВАЙП</strong> = ДВИЖЕНИЕ | 👆 <strong>ПРАВЫЙ СВАЙП</strong> = АТАКА<br>
-        🎯 <strong>КЛИК</strong> = АТАКА | ⚔️ <strong>ПОБЕДИ ВРАГА!</strong>
+    <div id="stats">
+        <div>👤 HP: <div class="bar"><div class="bar-fill" id="hp1"></div></div></div>
+        <div style="margin-top: 10px;">👹 HP: <div class="bar"><div class="bar-fill" id="hp2"></div></div></div>
     </div>
 </div>
 
-<div id="notification" class="notification"></div>
 <canvas id="gameCanvas"></canvas>
 
 <script>
-    // Firebase config
     const firebaseConfig = {
         apiKey: "AIzaSyAb2_n8alGnm2v574Yaad2e53kyyHuPaIM",
         authDomain: "tl-bs-5899b.firebaseapp.com",
@@ -275,601 +61,283 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Все персонажи с полными характеристиками
     const BRAWLERS = {
-        Shelly: { color: '#bc42f5', speed: 4, reload: 1500, maxAmmo: 3, maxHp: 4200, damage: 400, icon: '🐚' },
-        Colt: { color: '#f54242', speed: 4.5, reload: 1300, maxAmmo: 3, maxHp: 3600, damage: 380, icon: '🔫' },
-        El_Primo: { color: '#3498db', speed: 3.5, reload: 1000, maxAmmo: 3, maxHp: 5500, damage: 450, icon: '💪' },
-        Barley: { color: '#95a5a6', speed: 3.8, reload: 1800, maxAmmo: 3, maxHp: 3000, damage: 360, icon: '🍺' },
-        Brock: { color: '#34495e', speed: 4, reload: 2000, maxAmmo: 3, maxHp: 3200, damage: 420, icon: '🚀' },
-        Dynamike: { color: '#e67e22', speed: 3.8, reload: 1800, maxAmmo: 3, maxHp: 3400, damage: 440, icon: '💣' },
-        Mortis: { color: '#8e44ad', speed: 4.8, reload: 2400, maxAmmo: 3, maxHp: 3600, damage: 380, icon: '🧛' },
-        Stu: { color: '#e74c3c', speed: 4.5, reload: 1400, maxAmmo: 2, maxHp: 3200, damage: 360, icon: '🎪' },
-        Darryl: { color: '#7f8c8d', speed: 4, reload: 1300, maxAmmo: 3, maxHp: 4000, damage: 410, icon: '🛢️' },
-        Nani: { color: '#f1c40f', speed: 3.9, reload: 2100, maxAmmo: 3, maxHp: 3200, damage: 390, icon: '🤖' },
-        Max: { color: '#ffeb3b', speed: 5.5, reload: 1100, maxAmmo: 4, maxHp: 3200, damage: 340, icon: '⚡' },
-        Crow: { color: '#2ecc71', speed: 5.2, reload: 1400, maxAmmo: 3, maxHp: 3200, damage: 370, icon: '🐦' },
-        Tara: { color: '#e91e63', speed: 4, reload: 2000, maxAmmo: 3, maxHp: 3600, damage: 380, icon: '🌙' },
-        Gene: { color: '#9c27b0', speed: 4, reload: 1800, maxAmmo: 3, maxHp: 3400, damage: 360, icon: '👻' },
-        Bibi: { color: '#3f51b5', speed: 4.5, reload: 1200, maxAmmo: 3, maxHp: 4200, damage: 430, icon: '⚾' },
-        Bull: { color: '#5d4037', speed: 4, reload: 1400, maxAmmo: 3, maxHp: 4800, damage: 420, icon: '🐂' },
-        Jessie: { color: '#ff5722', speed: 4, reload: 1800, maxAmmo: 3, maxHp: 3200, damage: 360, icon: '🔧' },
-        Bo: { color: '#2e7d32', speed: 4, reload: 1700, maxAmmo: 3, maxHp: 3400, damage: 390, icon: '🏹' },
-        Tick: { color: '#455a64', speed: 3.5, reload: 2200, maxAmmo: 3, maxHp: 3200, damage: 350, icon: '⏱️' },
-        Rosa: { color: '#4caf50', speed: 4, reload: 1000, maxAmmo: 3, maxHp: 4600, damage: 410, icon: '🌸' }
+        Shelly: { color: '#bc42f5', speed: 4, maxHp: 4200, damage: 400 },
+        Colt: { color: '#f54242', speed: 4.5, maxHp: 3600, damage: 380 },
+        El_Primo: { color: '#3498db', speed: 3.5, maxHp: 5500, damage: 450 },
+        Barley: { color: '#95a5a6', speed: 3.8, maxHp: 3000, damage: 360 },
+        Brock: { color: '#34495e', speed: 4, maxHp: 3200, damage: 420 },
+        Dynamike: { color: '#e67e22', speed: 3.8, maxHp: 3400, damage: 440 },
+        Mortis: { color: '#8e44ad', speed: 4.8, maxHp: 3600, damage: 380 },
+        Stu: { color: '#e74c3c', speed: 4.5, maxHp: 3200, damage: 360 },
+        Darryl: { color: '#7f8c8d', speed: 4, maxHp: 4000, damage: 410 },
+        Nani: { color: '#f1c40f', speed: 3.9, maxHp: 3200, damage: 390 },
+        Max: { color: '#ffeb3b', speed: 5.5, maxHp: 3200, damage: 340 },
+        Crow: { color: '#2ecc71', speed: 5.2, maxHp: 3200, damage: 370 },
+        Tara: { color: '#e91e63', speed: 4, maxHp: 3600, damage: 380 },
+        Gene: { color: '#9c27b0', speed: 4, maxHp: 3400, damage: 360 },
+        Bibi: { color: '#3f51b5', speed: 4.5, maxHp: 4200, damage: 430 },
+        Bull: { color: '#5d4037', speed: 4, maxHp: 4800, damage: 420 },
+        Jessie: { color: '#ff5722', speed: 4, maxHp: 3200, damage: 360 },
+        Bo: { color: '#2e7d32', speed: 4, maxHp: 3400, damage: 390 },
+        Tick: { color: '#455a64', speed: 3.5, maxHp: 3200, damage: 350 },
+        Rosa: { color: '#4caf50', speed: 4, maxHp: 4600, damage: 410 }
     };
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const statusEl = document.getElementById('status');
+    const menu = document.getElementById('menu');
+    const status = document.getElementById('status');
     const gameIdEl = document.getElementById('gameId');
-    const menuEl = document.getElementById('menu');
-    const notificationEl = document.getElementById('notification');
 
-    let gameId = null;
-    let playerId = null;
-    let isPlayer1 = false;
-    let gameActive = false;
-    let animationId = null;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    // Игрок
-    let p = { 
-        x: 0, y: 0, scale: 1, hp: 3600, maxHp: 3600, 
-        brawler: 'Colt', ammo: 3, reloadTimer: 0,
-        isFlying: false, speedMult: 1, hitTimer: 0
-    };
-
-    // Враг
-    let enemy = { 
-        x: 0, y: 0, hp: 3600, maxHp: 3600, 
-        brawler: 'Shelly', hitTimer: 0
-    };
-
-    // Пули и эффекты
+    let gameId = null, playerId = null, isPlayer1 = false, gameActive = false;
+    let p = { x: 0, y: 0, hp: 3600, maxHp: 3600, brawler: 'Colt' };
+    let e = { x: 0, y: 0, hp: 3600, maxHp: 3600, brawler: 'Shelly' };
     let bullets = [];
-    let zones = [];
-    let particles = [];
-    let damageTexts = [];
+    let joyL = { x: 100, y: canvas.height - 100, active: false, cx: 100, cy: 0 };
+    let joyR = { x: canvas.width - 100, y: canvas.height - 100, active: false, cx: 0, cy: 0 };
 
-    // Джойстики
-    let joyL = { active: false, x: 100, y: 0, cx: 100, cy: 0, id: null };
-    let joyR = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
-
-    function generateGameId() {
-        return 'game_' + Math.random().toString(36).substr(2, 9);
-    }
-
-    function showNotification(text) {
-        notificationEl.innerText = text;
-        notificationEl.style.display = 'block';
-        setTimeout(() => {
-            notificationEl.style.display = 'none';
-        }, 2000);
-    }
+    function randomId() { return Math.random().toString(36).substr(2, 9); }
 
     function createGame() {
-        let brawler = document.getElementById('brawlerSelect').value.trim();
-        if (!brawler || !BRAWLERS[brawler]) {
-            alert('❌ Выберите правильное имя бойца!');
-            return;
-        }
-        p.brawler = brawler;
-        const stats = BRAWLERS[p.brawler];
-        p.maxHp = stats.maxHp;
-        p.hp = stats.maxHp;
-        p.ammo = stats.maxAmmo;
+        let b = document.getElementById('brawler').value.trim();
+        if(!b || !BRAWLERS[b]) { alert('❌ Неверное имя!'); return; }
+        p.brawler = b;
+        p.maxHp = BRAWLERS[b].maxHp;
+        p.hp = p.maxHp;
 
-        gameId = generateGameId();
+        gameId = 'g_' + randomId();
         playerId = 'p1_' + Date.now();
         isPlayer1 = true;
-        
-        menuEl.classList.add('hidden');
-        statusEl.innerText = "⏳ Ожидание игрока...\n🎮 ID: " + gameId;
-        gameIdEl.innerHTML = `<strong>📋 ID ИГРЫ:</strong><br><span style="color:#ffff00; font-weight:bold; font-size:16px;">${gameId}</span><br><br><strong>☝️ Отправьте это сопернику!</strong>`;
-        
+
+        menu.classList.add('hidden');
+        status.innerText = '⏳ Ожидание...';
+        gameIdEl.innerText = 'ID: ' + gameId;
+
         db.ref('games/' + gameId).set({
-            player1: playerId,
-            player1Brawler: p.brawler,
-            player1x: 0,
-            player1y: 0,
-            player1hp: p.maxHp,
-            player2: null,
-            player2Brawler: 'Shelly',
-            player2x: 0,
-            player2y: 0,
-            player2hp: BRAWLERS['Shelly'].maxHp,
-            status: 'waiting',
-            createdAt: Date.now()
+            p1: playerId, p1b: b, p1x: 0, p1y: 0, p1h: p.maxHp,
+            p2: null, p2b: 'Shelly', p2x: 0, p2y: 0, p2h: BRAWLERS['Shelly'].maxHp
         });
 
-        db.ref('games/' + gameId + '/player2').on('value', (snap) => {
-            if (snap.val() && gameActive === false) {
-                db.ref('games/' + gameId).once('value', (gameSnap) => {
-                    const gameData = gameSnap.val();
-                    enemy.brawler = gameData.player2Brawler || 'Shelly';
-                    enemy.maxHp = BRAWLERS[enemy.brawler].maxHp;
-                    enemy.hp = enemy.maxHp;
+        db.ref('games/' + gameId + '/p2').on('value', snap => {
+            if(snap.val() && !gameActive) {
+                db.ref('games/' + gameId).once('value', d => {
+                    e.brawler = d.val().p2b || 'Shelly';
+                    e.maxHp = BRAWLERS[e.brawler].maxHp;
+                    e.hp = e.maxHp;
                 });
                 gameActive = true;
-                statusEl.innerText = "▶️ Игра началась!";
-                gameIdEl.innerHTML = "";
+                status.innerText = '▶️ Игра!';
+                gameIdEl.innerText = '';
                 startGame();
             }
         });
-
-        showNotification('✅ Игра создана!');
     }
 
-    function joinGamePrompt() {
-        let brawler = document.getElementById('brawlerSelect').value.trim();
-        if (!brawler || !BRAWLERS[brawler]) {
-            alert('❌ Выберите правильное имя бойца!');
-            return;
-        }
-        p.brawler = brawler;
-        const stats = BRAWLERS[p.brawler];
-        p.maxHp = stats.maxHp;
-        p.hp = stats.maxHp;
-        p.ammo = stats.maxAmmo;
+    function joinGame() {
+        let b = document.getElementById('brawler').value.trim();
+        if(!b || !BRAWLERS[b]) { alert('❌ Неверное имя!'); return; }
+        p.brawler = b;
+        p.maxHp = BRAWLERS[b].maxHp;
+        p.hp = p.maxHp;
 
-        gameId = prompt("📌 Введите ID игры:");
-        if (!gameId) return;
+        gameId = prompt('ID игры:');
+        if(!gameId) return;
 
         playerId = 'p2_' + Date.now();
         isPlayer1 = false;
 
-        db.ref('games/' + gameId).once('value', (snap) => {
-            if (snap.exists()) {
-                const gameData = snap.val();
-                if (gameData.player2) {
-                    alert("❌ В этой игре уже два игрока!");
-                    return;
-                }
-                
-                enemy.brawler = gameData.player1Brawler || 'Shelly';
-                enemy.maxHp = BRAWLERS[enemy.brawler].maxHp;
-                enemy.hp = enemy.maxHp;
+        db.ref('games/' + gameId).once('value', snap => {
+            if(snap.exists()) {
+                let d = snap.val();
+                if(d.p2) { alert('❌ Игра полная!'); return; }
+                e.brawler = d.p1b || 'Shelly';
+                e.maxHp = BRAWLERS[e.brawler].maxHp;
+                e.hp = e.maxHp;
 
-                db.ref('games/' + gameId).update({
-                    player2: playerId,
-                    player2Brawler: p.brawler,
-                    status: 'active'
-                });
-                
-                menuEl.classList.add('hidden');
+                db.ref('games/' + gameId).update({ p2: playerId, p2b: b });
+                menu.classList.add('hidden');
                 gameActive = true;
-                statusEl.innerText = "▶️ Игра началась!";
-                gameIdEl.innerHTML = "";
+                status.innerText = '▶️ Игра!';
+                gameIdEl.innerText = '';
                 startGame();
-                showNotification('✅ Присоединились!');
             } else {
-                alert("❌ Игра не найдена!");
+                alert('❌ Не найдена!');
             }
         });
     }
 
     function startGame() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        if (isPlayer1) {
-            p.x = canvas.width / 2 - 150;
-            p.y = canvas.height - 120;
-            enemy.x = canvas.width / 2 + 150;
-            enemy.y = 120;
+        if(isPlayer1) {
+            p.x = canvas.width / 2 - 100;
+            p.y = canvas.height - 100;
+            e.x = canvas.width / 2 + 100;
+            e.y = 100;
         } else {
-            p.x = canvas.width / 2 + 150;
-            p.y = 120;
-            enemy.x = canvas.width / 2 - 150;
-            enemy.y = canvas.height - 120;
+            p.x = canvas.width / 2 + 100;
+            p.y = 100;
+            e.x = canvas.width / 2 - 100;
+            e.y = canvas.height - 100;
         }
 
-        joyL.x = 100;
-        joyL.y = canvas.height - 120;
-        joyR.x = canvas.width - 100;
-        joyR.y = canvas.height - 130;
+        const pxk = isPlayer1 ? 'p1x' : 'p2x';
+        const pyk = isPlayer1 ? 'p1y' : 'p2y';
+        const phk = isPlayer1 ? 'p1h' : 'p2h';
+        const exk = isPlayer1 ? 'p2x' : 'p1x';
+        const eyk = isPlayer1 ? 'p2y' : 'p1y';
+        const ehk = isPlayer1 ? 'p2h' : 'p1h';
 
-        const playerXKey = isPlayer1 ? 'player1x' : 'player2x';
-        const playerYKey = isPlayer1 ? 'player1y' : 'player2y';
-        const playerHpKey = isPlayer1 ? 'player1hp' : 'player2hp';
-
-        // Синхронизируем каждые 50мс
         setInterval(() => {
-            if (gameActive) {
+            if(gameActive) {
                 db.ref('games/' + gameId).update({
-                    [playerXKey]: Math.round(p.x),
-                    [playerYKey]: Math.round(p.y),
-                    [playerHpKey]: Math.round(Math.max(0, p.hp))
+                    [pxk]: Math.round(p.x),
+                    [pyk]: Math.round(p.y),
+                    [phk]: Math.round(Math.max(0, p.hp))
                 });
             }
-        }, 50);
+        }, 100);
 
-        // Получаем данные врага
-        const enemyXKey = isPlayer1 ? 'player2x' : 'player1x';
-        const enemyYKey = isPlayer1 ? 'player2y' : 'player1y';
-        const enemyHpKey = isPlayer1 ? 'player2hp' : 'player1hp';
-
-        db.ref('games/' + gameId).on('value', (snap) => {
-            if (snap.val()) {
-                const gameData = snap.val();
-                enemy.x = gameData[enemyXKey] || enemy.x;
-                enemy.y = gameData[enemyYKey] || enemy.y;
-                enemy.hp = Math.max(0, gameData[enemyHpKey] || enemy.hp);
+        db.ref('games/' + gameId).on('value', snap => {
+            if(snap.val()) {
+                let d = snap.val();
+                e.x = d[exk] || e.x;
+                e.y = d[eyk] || e.y;
+                e.hp = Math.max(0, d[ehk] || e.hp);
             }
         });
 
-        document.getElementById('playerName').innerText = BRAWLERS[p.brawler].icon + ' ' + p.brawler;
-        document.getElementById('enemyName').innerText = BRAWLERS[enemy.brawler].icon + ' ' + enemy.brawler;
-
-        updateAmmoDisplay();
-        animationId = requestAnimationFrame(update);
+        requestAnimationFrame(update);
     }
 
-    function spawnBullet(angle, speed, life, size=10, damage=400) {
-        bullets.push({
-            x: p.x,
-            y: p.y,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life,
-            size,
-            damage,
-            angle: angle
-        });
-
-        // Частицы при выстреле
-        for(let i=0; i<3; i++) {
-            particles.push({
-                x: p.x,
-                y: p.y,
-                vx: (Math.random()-0.5)*2,
-                vy: (Math.random()-0.5)*2,
-                life: 30,
-                color: '#ffff00'
-            });
-        }
+    function spawnBullet(angle) {
+        let stats = BRAWLERS[p.brawler];
+        bullets.push({ x: p.x, y: p.y, vx: Math.cos(angle) * 8, vy: Math.sin(angle) * 8, life: 100, size: 8 });
     }
 
     function attack(angle) {
-        const stats = BRAWLERS[p.brawler];
-        
-        if (p.ammo >= 1 && p.reloadTimer <= 0) {
-            p.ammo -= 1;
-            p.reloadTimer = stats.reload;
-
-            // Разные типы атак для каждого бойца
-            switch(p.brawler) {
-                case 'Shelly':
-                    for(let i=-1; i<=1; i++) spawnBullet(angle+i*0.25, 12, 35, 12, 400);
-                    break;
-                case 'Colt':
-                    for(let i=0; i<3; i++) {
-                        setTimeout(() => spawnBullet(angle, 15, 45, 8, 380), i*100);
-                    }
-                    break;
-                case 'El_Primo':
-                    for(let i=0; i<2; i++) {
-                        setTimeout(() => spawnBullet(angle, 10, 20, 15, 450), i*150);
-                    }
-                    break;
-                case 'Bull':
-                    for(let i=-2; i<=2; i++) spawnBullet(angle+i*0.2, 13, 25, 11, 420);
-                    break;
-                case 'Brock':
-                    spawnBullet(angle, 14, 60, 12, 420);
-                    break;
-                case 'Max':
-                    for(let i=0; i<4; i++) {
-                        setTimeout(() => spawnBullet(angle, 18, 35, 7, 340), i*50);
-                    }
-                    break;
-                case 'Crow':
-                    for(let i=-1; i<=1; i++) spawnBullet(angle+i*0.3, 14, 40, 8, 370);
-                    break;
-                case 'Mortis':
-                    p.x += Math.cos(angle)*100;
-                    p.y += Math.sin(angle)*100;
-                    break;
-                case 'Stu':
-                    spawnBullet(angle, 16, 30, 9, 360);
-                    setTimeout(() => spawnBullet(angle, 16, 30, 9, 360), 100);
-                    break;
-                default:
-                    spawnBullet(angle, 12, 40, 10, stats.damage);
-            }
-
-            updateAmmoDisplay();
+        spawnBullet(angle);
+        for(let i = -0.3; i <= 0.3; i += 0.3) {
+            spawnBullet(angle + i);
         }
     }
 
-    function hitEnemy(dmg) {
-        enemy.hp -= dmg;
-        enemy.hitTimer = 10;
-
-        // Текст урона
-        damageTexts.push({
-            x: enemy.x,
-            y: enemy.y,
-            text: '-' + dmg,
-            life: 60,
-            color: '#ff0000'
-        });
-
-        // Частицы при попадании
-        for(let i=0; i<5; i++) {
-            particles.push({
-                x: enemy.x,
-                y: enemy.y,
-                vx: (Math.random()-0.5)*4,
-                vy: (Math.random()-0.5)*4 - 2,
-                life: 40,
-                color: '#ff0000'
-            });
-        }
-
-        if(enemy.hp <= 0) {
-            gameActive = false;
-            setTimeout(() => {
-                showNotification('🎉 ВЫ ПОБЕДИЛИ! 🎉');
-                setTimeout(() => {
-                    location.reload();
-                }, 3000);
-            }, 500);
-        }
-    }
-
-    window.addEventListener('touchstart', e => {
-        for(let t of e.changedTouches) {
-            let tx = t.clientX, ty = t.clientY;
-            if(tx < canvas.width/2) {
-                joyL.id = t.identifier;
-                joyL.active = true;
-                joyL.cx = tx;
-                joyL.cy = ty;
-            } else {
-                joyR.id = t.identifier;
-                joyR.active = true;
-                joyR.cx = tx;
-                joyR.cy = ty;
-            }
-        }
-        e.preventDefault();
-    }, {passive: false});
-
-    window.addEventListener('touchmove', e => {
+    canvas.addEventListener('touchstart', e => {
         for(let t of e.touches) {
-            if(t.identifier === joyL.id) {
+            if(t.clientX < canvas.width/2) {
+                joyL.active = true;
                 joyL.cx = t.clientX;
-                joyL.cy = t.clientY;
-            }
-            if(t.identifier === joyR.id) {
+            } else {
+                joyR.active = true;
                 joyR.cx = t.clientX;
                 joyR.cy = t.clientY;
             }
         }
-        e.preventDefault();
-    }, {passive: false});
+    }, false);
 
-    window.addEventListener('touchend', e => {
-        for(let t of e.changedTouches) {
-            if(t.identifier === joyL.id) {
-                joyL.active = false;
-            }
-            if(t.identifier === joyR.id) {
-                let dx = joyR.cx - joyR.x;
-                let dy = joyR.cy - joyR.y;
-                if(Math.hypot(dx, dy) > 30) {
-                    attack(Math.atan2(dy, dx));
-                }
-                joyR.active = false;
-            }
+    canvas.addEventListener('touchmove', e => {
+        for(let t of e.touches) {
+            if(joyL.active) joyL.cx = t.clientX;
+            if(joyR.active) { joyR.cx = t.clientX; joyR.cy = t.clientY; }
         }
-        e.preventDefault();
-    }, {passive: false});
+    }, false);
 
-    canvas.addEventListener('click', (e) => {
-        if(gameActive) {
-            let angle = Math.atan2(e.clientY - p.y, e.clientX - p.x);
-            attack(angle);
+    canvas.addEventListener('touchend', e => {
+        if(joyL.active) joyL.active = false;
+        if(joyR.active) {
+            let dx = joyR.cx - joyR.x, dy = joyR.cy - joyR.y;
+            if(Math.hypot(dx, dy) > 30) attack(Math.atan2(dy, dx));
+            joyR.active = false;
         }
+    }, false);
+
+    canvas.addEventListener('click', e => {
+        if(gameActive) attack(Math.atan2(e.clientY - p.y, e.clientX - p.x));
     });
 
-    function updateAmmoDisplay() {
-        const container = document.getElementById('ammo-container');
-        const stats = BRAWLERS[p.brawler];
-        container.innerHTML = '';
-        for(let i=0; i<stats.maxAmmo; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'ammo-cell';
-            if(p.ammo > i) {
-                let fill = document.createElement('div');
-                fill.className = 'ammo-fill';
-                fill.style.width = Math.min(100, Math.max(0, (p.ammo - i)*100)) + '%';
-                cell.appendChild(fill);
-            }
-            container.appendChild(cell);
-        }
-    }
-
     function update() {
-        if(!gameActive) {
-            cancelAnimationFrame(animationId);
-            return;
-        }
+        if(!gameActive) return;
 
-        const stats = BRAWLERS[p.brawler];
-
-        // Перезарядка
-        if(p.reloadTimer > 0) p.reloadTimer--;
-        if(p.ammo < stats.maxAmmo) p.ammo += 1/(stats.reload/16.6);
-
-        // Движение
+        let stats = BRAWLERS[p.brawler];
+        
         if(joyL.active) {
-            let dx = joyL.cx - joyL.x;
-            let dy = joyL.cy - joyL.y;
-            let dist = Math.hypot(dx, dy);
-            if(dist > 10) {
-                p.x += (dx/dist) * stats.speed;
-                p.y += (dy/dist) * stats.speed;
-            }
+            let dx = joyL.cx - joyL.x, dist = Math.hypot(dx, 50);
+            p.x += (dx / dist) * stats.speed;
+            p.y -= (50 / dist) * stats.speed;
         }
 
-        // Границы
-        p.x = Math.max(40, Math.min(canvas.width-40, p.x));
-        p.y = Math.max(40, Math.min(canvas.height-40, p.y));
+        p.x = Math.max(30, Math.min(canvas.width - 30, p.x));
+        p.y = Math.max(30, Math.min(canvas.height - 30, p.y));
 
-        // Обновляем пули
         bullets.forEach((b, i) => {
             b.x += b.vx;
             b.y += b.vy;
             b.life--;
-
             if(b.life <= 0 || b.x < 0 || b.x > canvas.width || b.y < 0 || b.y > canvas.height) {
                 bullets.splice(i, 1);
             }
-
-            if(Math.hypot(b.x-enemy.x, b.y-enemy.y) < 40) {
-                hitEnemy(b.damage);
+            if(Math.hypot(b.x - e.x, b.y - e.y) < 40) {
+                let dmg = BRAWLERS[p.brawler].damage;
+                e.hp -= dmg;
                 bullets.splice(i, 1);
+                if(e.hp <= 0) {
+                    gameActive = false;
+                    alert('🎉 ВЫ ПОБЕДИЛИ!');
+                    location.reload();
+                }
             }
         });
 
-        // Обновляем частицы
-        particles.forEach((p, i) => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life--;
-            if(p.life <= 0) particles.splice(i, 1);
-        });
+        document.getElementById('hp1').style.width = (p.hp / p.maxHp * 100) + '%';
+        document.getElementById('hp2').style.width = (e.hp / e.maxHp * 100) + '%';
 
-        // Обновляем текст урона
-        damageTexts.forEach((t, i) => {
-            t.y -= 2;
-            t.life--;
-            if(t.life <= 0) damageTexts.splice(i, 1);
-        });
-
-        // Таймеры попадания
-        if(p.hitTimer > 0) p.hitTimer--;
-        if(enemy.hitTimer > 0) enemy.hitTimer--;
-
-        updateUI();
         draw();
-        animationId = requestAnimationFrame(update);
-    }
-
-    function updateUI() {
-        document.getElementById('playerHpBar').style.width = Math.max(0, (p.hp/p.maxHp)*100) + '%';
-        document.getElementById('enemyHpBar').style.width = Math.max(0, (enemy.hp/enemy.maxHp)*100) + '%';
+        requestAnimationFrame(update);
     }
 
     function draw() {
-        ctx.fillStyle = "#2e7d32";
+        ctx.fillStyle = '#2e7d32';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Сетка фона
-        ctx.strokeStyle = "rgba(0,0,0,0.1)";
-        ctx.lineWidth = 1;
-        for(let i=0; i<canvas.width; i+=50) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, canvas.height);
-            ctx.stroke();
-        }
-        for(let i=0; i<canvas.height; i+=50) {
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(canvas.width, i);
-            ctx.stroke();
-        }
-
         // Пули
-        ctx.fillStyle = "#ffff00";
+        ctx.fillStyle = '#ffff00';
         bullets.forEach(b => {
             ctx.beginPath();
-            ctx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+            ctx.arc(b.x, b.y, b.size, 0, Math.PI * 2);
             ctx.fill();
-            ctx.strokeStyle = "#ff9900";
-            ctx.lineWidth = 2;
-            ctx.stroke();
         });
 
-        // Частицы
-        particles.forEach(p => {
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = p.life / 50;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-        });
-
-        // Враг с эффектом попадания
-        ctx.fillStyle = BRAWLERS[enemy.brawler].color;
-        if(enemy.hitTimer > 0) {
-            ctx.shadowColor = '#ff0000';
-            ctx.shadowBlur = 20;
-        }
+        // Враг
+        ctx.fillStyle = BRAWLERS[e.brawler].color;
         ctx.beginPath();
-        ctx.arc(enemy.x, enemy.y, 35, 0, Math.PI*2);
+        ctx.arc(e.x, e.y, 30, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = "#ffff00";
-        ctx.lineWidth = 2;
-        ctx.stroke();
 
-        // Игрок с эффектом попадания
+        // Игрок
         ctx.fillStyle = BRAWLERS[p.brawler].color;
-        if(p.hitTimer > 0) {
-            ctx.shadowColor = '#ff0000';
-            ctx.shadowBlur = 20;
-        }
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 35, 0, Math.PI*2);
+        ctx.arc(p.x, p.y, 30, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = "#00ff00";
+        ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 3;
         ctx.stroke();
 
-        // Текст урона
-        damageTexts.forEach(t => {
-            ctx.fillStyle = t.color;
-            ctx.globalAlpha = t.life / 60;
-            ctx.font = "bold 24px Arial";
-            ctx.textAlign = "center";
-            ctx.fillText(t.text, t.x, t.y);
-            ctx.globalAlpha = 1;
-        });
-
         // Джойстики
         ctx.globalAlpha = 0.2;
-        ctx.fillStyle = "#00ff00";
+        ctx.fillStyle = '#fff';
         ctx.beginPath();
-        ctx.arc(joyL.x, joyL.y, 80, 0, Math.PI*2);
+        ctx.arc(joyL.x, joyL.y, 70, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "#ff00ff";
         ctx.beginPath();
-        ctx.arc(joyR.x, joyR.y, 80, 0, Math.PI*2);
+        ctx.arc(joyR.x, joyR.y, 70, 0, Math.PI * 2);
         ctx.fill();
         ctx.globalAlpha = 1;
-
-        // Активные джойстики
-        if(joyL.active) {
-            ctx.strokeStyle = "#00ff00";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(joyL.x, joyL.y, 80, 0, Math.PI*2);
-            ctx.stroke();
-        }
-        if(joyR.active) {
-            ctx.strokeStyle = "#ff00ff";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(joyR.x, joyR.y, 80, 0, Math.PI*2);
-            ctx.stroke();
-        }
     }
+
+    window.createGame = createGame;
+    window.joinGame = joinGame;
 </script>
 
 </body>
