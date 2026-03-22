@@ -198,12 +198,33 @@
         randomBattle: ['Song/Fight_1.mp3', 'Song/Fight_2.mp3', 'Song/Fight_3.mp3', 'Song/Fight_4.mp3', 'Song/Fight_4.ogg', 'Song/Fight_5.ogg', 'Song/Fight_6.ogg', 'Song/Fight_7.ogg', 'Song/Fight_8.ogg', 'Song/Fight_9.ogg', 'Song/Fight_10.ogg', 'Song/Fight_11.ogg', 'Song/Fight_12.ogg']
     };
     
-    // SFX ЗВУКИ
+    // SFX ЗВУКИ - ПРАВИЛЬНЫЕ ЭФФЕКТЫ
     const SFX_TRACKS = {
-        click: ['Song/Menu_click.ogg', 'Song/Button.ogg'],
-        shoot: ['Song/Goal.ogg', 'Song/Drop_box.ogg', 'Song/Button.ogg'],
-        ult: ['Song/Ulti_ready.ogg', 'Song/Victory.ogg', 'Song/Reveal_epic_card.ogg'],
-        hit: ['Song/Victory.ogg', 'Song/Win_screen.ogg', 'Song/Doubletakedown_vo.ogg']
+        menuClick: ['Song/Menu_click.ogg'],
+        buttonClick: ['Song/Button.ogg'],
+        selectBrawler: ['Song/Select_brawler.ogg'],
+        goal: ['Song/Goal.ogg'],
+        shoot: ['Song/Drop_box.ogg'],
+        ultReady: ['Song/Ulti_ready.ogg'],
+        victory: ['Song/Victory.ogg'],
+        gameWin: ['Song/Game_win.ogg'],
+        gameLost: ['Song/Game_lost.ogg'],
+        winScreen: ['Song/Win_screen.ogg'],
+        loseScreen: ['Song/Lose_screen.ogg'],
+        revealEpic: ['Song/Reveal_epic_card.ogg'],
+        revealRare: ['Song/Reveal_rare_card.ogg'],
+        revealLegendary: ['Song/Reveal_legendary_card.ogg'],
+        openBox: ['Song/Open_box.ogg'],
+        dropBox: ['Song/Drop_box.ogg'],
+        characterDrop: ['Song/Сharacter_drops.ogg'],
+        buy: ['Song/Pass_buy.ogg'],
+        shop: ['Song/Shop.ogg'],
+        cancellation: ['Song/Cancellation.ogg'],
+        back: ['Song/Back.ogg'],
+        overtime: ['Song/Overtime.ogg'],
+        panicTime: ['Song/Panic_time.ogg'],
+        showingPlayers: ['Song/Showing_players.mp3'],
+        beforeMatch: ['Song/Showing_players_before_the_match.mp3']
     };
 
     // ========== ЗВУКОВАЯ СИСТЕМА ==========
@@ -442,7 +463,7 @@
         activePin.timer = 150;
         activePin.scale = 0;
         togglePinMenu();
-        playSound('click');
+        playSound('menuClick');
     }
 
     function drawPin(x, y, pin) {
@@ -465,13 +486,14 @@
     }
 
     function changeScreen(id) {
-        playSound('click');
+        playSound('menuClick');
         document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
         
         if (id === 'game') {
             canvas.style.display = 'block';
             document.getElementById('hud').style.display = 'flex';
             sounds.menuMusic.pause();
+            playSound('beforeMatch');
             
             if (audioSettings.musicEnabled) {
                 let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
@@ -521,7 +543,7 @@
                 current = key;
                 document.getElementById('active-name').innerText = key.replace('_', ' ');
                 document.getElementById('char-preview').style.background = b.color;
-                playSound('click');
+                playSound('selectBrawler');
             };
             list.appendChild(div);
         });
@@ -572,7 +594,7 @@
         if (p.isFlying || pip.active) return;
         if (isUltAction && isUltReady) {
             ultCharge = 0;
-            playSound('ult');
+            playSound('ultReady');
             useUltimate(angle);
         } else if (!isUltAction && ammo >= 1) {
             ammo -= 1;
@@ -644,8 +666,9 @@
 
     function hitEnemy(dmg, canCharge) {
         enemy.hp -= dmg;
-        playSound('hit');
+        playSound('victory');
         if (enemy.hp <= 0) {
+            playSound('gameWin');
             enemy.hp = enemy.maxHp;
             enemy.x = canvas.width / 2;
             enemy.y = 150;
