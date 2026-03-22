@@ -8,26 +8,26 @@
         body { margin: 0; background: #004dc0; font-family: 'Arial Black', sans-serif; overflow: hidden; color: white; touch-action: none; }
         .screen { position: absolute; width: 100vw; height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
         #menu { display: flex; background: radial-gradient(circle, #0066ff, #003399); }
-        .btn { background: #ffcc00; border: 4px solid #000; padding: 10px 20px; border-radius: 12px; color: #000; cursor: pointer; text-transform: uppercase; font-size: 14px; margin: 5px; box-shadow: 0 4px #b38f00; z-index: 50; }
+        .btn { background: #ffcc00; border: 4px solid #000; padding: 10px 20px; border-radius: 12px; color: #000; cursor: pointer; text-transform: uppercase; font-size: 14px; margin: 5px; box-shadow: 0 4px #b38f00; z-index: 50; pointer-events: auto; }
+        .btn:active { transform: translateY(2px); }
         .play-btn { padding: 20px 80px; font-size: 30px; background: #00ff00; margin-top: 20px; }
         .scroll-container { width: 90%; height: 60%; overflow-y: auto; display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; border: 2px solid #555; border-radius: 15px; background: #222; }
         .card { width: 110px; height: 140px; background: #333; border: 3px solid #fff; border-radius: 15px; margin: 10px; text-align: center; cursor: pointer; display: flex; flex-direction: column; overflow: hidden; }
         canvas { display: none; background: #2e7d32; }
         #hud { position: absolute; top: 10px; width: 100%; display: none; flex-direction: column; align-items: center; z-index: 30; pointer-events: none; }
-        .exit-btn { position: absolute; top: 10px; left: 10px; z-index: 40; background: #ff4444; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; pointer-events: auto; }
+        .exit-btn { position: absolute; top: 10px; left: 10px; z-index: 40; background: #ff4444; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; pointer-events: auto; cursor: pointer; }
         .ult-container { width: 150px; height: 16px; background: #333; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
         #ult-bar { width: 0%; height: 100%; background: #ffff00; }
         .ammo-wrap { display: flex; gap: 4px; margin-top: 5px; }
         .ammo-cell { width: 35px; height: 8px; background: #555; border: 1px solid #fff; border-radius: 4px; }
         .ammo-fill { width: 100%; height: 100%; background: #ffaa00; }
         .pin-system { position: absolute; right: 25px; top: 400%; display: flex; align-items: center; z-index: 100; pointer-events: auto; }
-        .pin-btn { background: rgba(0, 0, 0, 0.7); border: 3px solid white; border-radius: 12px; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px #000; }
+        .pin-btn { background: rgba(0, 0, 0, 0.7); border: 3px solid white; border-radius: 12px; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px #000; pointer-events: auto; }
         .pin-menu { position: absolute; right: 65px; display: none; gap: 8px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.2); flex-direction: column; }
-        .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; }
+        .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; pointer-events: auto; }
         .ai-btn { background: #ff4444 !important; color: white !important; margin-top: 10px; border-width: 3px; }
         
-        /* НАСТРОЙКИ */
-        #settings-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
+        #settings-screen { display: none; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
         .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
         .settings-container h2 { text-align: center; color: #ffcc00; margin-bottom: 20px; font-size: 24px; }
         .setting-item { margin: 15px 0; }
@@ -35,24 +35,20 @@
         .volume-slider { width: 100%; height: 8px; background: #333; border-radius: 5px; cursor: pointer; -webkit-appearance: none; appearance: none; }
         .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #ffcc00; border-radius: 50%; cursor: pointer; }
         .volume-slider::-moz-range-thumb { width: 20px; height: 20px; background: #ffcc00; border-radius: 50%; cursor: pointer; border: none; }
-        .toggle-btn { width: 100%; padding: 10px; background: #00aa00; color: white; border: 2px solid #000; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin: 5px 0; }
-        .toggle-btn.off { background: #aa0000; }
+        .toggle-btn { width: 100%; padding: 10px; background: #00aa00; color: white; border: 2px solid #000; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin: 5px 0; pointer-events: auto; }
         .settings-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; }
+        .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; pointer-events: auto; }
         .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 40; cursor: pointer; font-weight: bold; pointer-events: auto; }
         
-        /* ВЫБОР МУЗЫКИ */
         .music-selector { margin: 15px 0; }
         .music-selector label { color: #fff; display: block; margin-bottom: 8px; font-size: 14px; }
-        .music-selector select { width: 100%; padding: 8px; background: #333; color: #ffcc00; border: 2px solid #ffcc00; border-radius: 8px; cursor: pointer; font-size: 12px; }
-        .music-selector select option { background: #333; color: #ffcc00; }
+        .music-selector select { width: 100%; padding: 8px; background: #333; color: #ffcc00; border: 2px solid #ffcc00; border-radius: 8px; cursor: pointer; font-size: 12px; pointer-events: auto; }
         
         .section-title { color: #ffcc00; font-size: 16px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #ffcc00; padding-bottom: 8px; }
     </style>
 </head>
 <body>
 
-<!-- ГЛАВНОЕ МЕНЮ -->
 <div id="menu" class="screen active" style="display: flex;">
     <button class="settings-btn" onclick="changeScreen('settings')">⚙️</button>
     <h1>BRAWL STARS</h1>
@@ -63,15 +59,13 @@
     <button class="btn" style="margin-top:20px;" onclick="changeScreen('brawlers')">БОЙЦЫ</button>
 </div>
 
-<!-- ВЫБОР БОЙЦА -->
 <div id="brawlers-screen" class="screen">
     <h2>ВЫБЕРИ БОЙЦА</h2>
     <div class="scroll-container" id="list"></div>
     <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">ВЫБРАТЬ</button>
 </div>
 
-<!-- НАСТРОЙКИ -->
-<div id="settings-screen" class="screen">
+<div id="settings-screen" class="screen" style="display: flex; align-items: center; justify-content: center;">
     <div class="settings-container">
         <h2>⚙️ НАСТРОЙКИ</h2>
         
@@ -129,7 +123,6 @@
     </div>
 </div>
 
-<!-- HUD ИГРЫ -->
 <div id="hud">
     <button class="exit-btn" onclick="exitToMenu()">ВЫЙТИ</button>
     <div class="ult-container"><div id="ult-bar"></div></div>
@@ -149,18 +142,13 @@
 <canvas id="gameCanvas"></canvas>
 
 <script>
-    // ========== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ==========
     let gameActive = false;
     let enemyAI = false;
     let current = 'Shelly';
     let ultCharge = 0;
     let isUltReady = false;
     let ammo = 3;
-    let isInGameMenu = false; // Флаг для меню в игре
-    let currentMenuMusic = null; // Текущий трек меню
-    let currentBattleMusic = null; // Текущий трек боя
     
-    // Настройки звука
     let audioSettings = {
         musicVolumeMenu: 100,
         musicVolumeBattle: 100,
@@ -171,7 +159,6 @@
         selectedBattleMusic: 'random'
     };
 
-    // ========== СПИСОК ВСЕХ МУЗЫК ==========
     const MUSIC_TRACKS = {
         menu: {
             'random': 'Случайная',
@@ -184,7 +171,6 @@
             'Song/Menu_7.ogg': 'Menu 7',
             'Song/Menu_8.ogg': 'Menu 8'
         },
-        
         battle: {
             'random': 'Случайная',
             'Song/Fight_1.mp3': 'Fight 1',
@@ -201,36 +187,10 @@
             'Song/Fight_11.ogg': 'Fight 11',
             'Song/Fight_12.ogg': 'Fight 12'
         },
-        
-        randomMenu: [
-            'Song/Menu_1.m4a',
-            'Song/Menu_2.ogg',
-            'Song/Menu_3.ogg',
-            'Song/Menu_4.ogg',
-            'Song/Menu_5.ogg',
-            'Song/Menu_6.ogg',
-            'Song/Menu_7.ogg',
-            'Song/Menu_8.ogg'
-        ],
-        
-        randomBattle: [
-            'Song/Fight_1.mp3',
-            'Song/Fight_2.mp3',
-            'Song/Fight_3.mp3',
-            'Song/Fight_4.mp3',
-            'Song/Fight_4.ogg',
-            'Song/Fight_5.ogg',
-            'Song/Fight_6.ogg',
-            'Song/Fight_7.ogg',
-            'Song/Fight_8.ogg',
-            'Song/Fight_9.ogg',
-            'Song/Fight_10.ogg',
-            'Song/Fight_11.ogg',
-            'Song/Fight_12.ogg'
-        ]
+        randomMenu: ['Song/Menu_1.m4a', 'Song/Menu_2.ogg', 'Song/Menu_3.ogg', 'Song/Menu_4.ogg', 'Song/Menu_5.ogg', 'Song/Menu_6.ogg', 'Song/Menu_7.ogg', 'Song/Menu_8.ogg'],
+        randomBattle: ['Song/Fight_1.mp3', 'Song/Fight_2.mp3', 'Song/Fight_3.mp3', 'Song/Fight_4.mp3', 'Song/Fight_4.ogg', 'Song/Fight_5.ogg', 'Song/Fight_6.ogg', 'Song/Fight_7.ogg', 'Song/Fight_8.ogg', 'Song/Fight_9.ogg', 'Song/Fight_10.ogg', 'Song/Fight_11.ogg', 'Song/Fight_12.ogg']
     };
     
-    // SFX ЗВУКИ
     const SFX_TRACKS = {
         click: ['Song/Menu_click.ogg', 'Song/Button.ogg'],
         shoot: ['Song/Goal.ogg', 'Song/Drop_box.ogg', 'Song/Button.ogg'],
@@ -238,7 +198,6 @@
         hit: ['Song/Victory.ogg', 'Song/Win_screen.ogg', 'Song/Doubletakedown_vo.ogg']
     };
 
-    // ========== ЗВУКОВАЯ СИСТЕМА ==========
     const sounds = {
         menuMusic: new Audio(),
         battleMusic: new Audio(),
@@ -251,14 +210,12 @@
 
     function getRandomTrack(type) {
         const tracks = MUSIC_TRACKS['random' + (type.charAt(0).toUpperCase() + type.slice(1))] || [];
-        if (tracks.length === 0) return 'Song/Menu_2.ogg';
-        return tracks[Math.floor(Math.random() * tracks.length)];
+        return tracks.length > 0 ? tracks[Math.floor(Math.random() * tracks.length)] : 'Song/Menu_2.ogg';
     }
 
     function getRandomSFX(type) {
         const tracks = SFX_TRACKS[type] || [];
-        if (tracks.length === 0) return '';
-        return tracks[Math.floor(Math.random() * tracks.length)];
+        return tracks.length > 0 ? tracks[Math.floor(Math.random() * tracks.length)] : '';
     }
 
     function playSound(type) {
@@ -272,7 +229,6 @@
         }
     }
 
-    // ========== ПЕРСОНАЖИ ==========
     const BRAWLERS = {
         Shelly: { color: '#bc42f5', speed: 4, reload: 1500, type: 'spread', ultType: 'spread_wide', ultChargeRate: 15, maxAmmo: 3 },
         Colt: { color: '#f54242', speed: 4.5, reload: 1300, type: 'line', ultType: 'line_long', ultChargeRate: 10, maxAmmo: 3 },
@@ -298,7 +254,6 @@
         Frank: { color: '#9575cd', speed: 3.2, reload: 1400, type: 'spread_heavy', ultType: 'stun_wave', ultChargeRate: 25, maxAmmo: 3 }
     };
 
-    // ========== ПЕРЕМЕННЫЕ ИГРЫ ==========
     let p = { x: 0, y: 0, scale: 1, isFlying: false, speedMult: 1, boostTimer: 0, shield: 0 };
     let pip = { active: false, x: 0, y: 0, angle: 0, life: 0 };
     let enemy = { x: 200, y: 150, hp: 30000, maxHp: 30000 };
@@ -307,12 +262,10 @@
     let joyR = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
     let joyU = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
     let activePin = { type: '', timer: 0, scale: 0 };
-    let enemyPin = { type: '', timer: 0, scale: 0 };
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // ========== ФУНКЦИИ МУЗЫКИ ==========
     function changeMenuMusic(value) {
         audioSettings.selectedMenuMusic = value;
         if (!gameActive && audioSettings.musicEnabled) {
@@ -337,7 +290,6 @@
         saveSettings();
     }
 
-    // ========== ФУНКЦИИ НАСТРОЕК ==========
     function changeMusicVolume(type, value) {
         if (type === 'menu') {
             audioSettings.musicVolumeMenu = parseInt(value);
@@ -363,15 +315,6 @@
         if (audioSettings.musicEnabled) {
             btn.textContent = '🔊 МУЗЫКА: ВКЛ';
             btn.style.background = '#00aa00';
-            if (!gameActive) {
-                let track = audioSettings.selectedMenuMusic === 'random' ? getRandomTrack('menu') : audioSettings.selectedMenuMusic;
-                sounds.menuMusic.src = track;
-                sounds.menuMusic.play();
-            } else {
-                let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
-                sounds.battleMusic.src = track;
-                sounds.battleMusic.play();
-            }
         } else {
             btn.textContent = '🔇 МУЗЫКА: ВЫКЛ';
             btn.style.background = '#aa0000';
@@ -470,7 +413,6 @@
         });
     }
 
-    // ========== ФУНКЦИИ ИГРЫ ==========
     function toggleAI() {
         enemyAI = !enemyAI;
         const btn = document.getElementById('ai-toggle');
@@ -512,44 +454,41 @@
     }
 
     function changeScreen(id) {
-        if (id !== 'game') {
-            playSound('click');
-            isInGameMenu = false;
-        }
-        
+        playSound('click');
         document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
         
         if (id === 'game') {
             canvas.style.display = 'block';
             document.getElementById('hud').style.display = 'flex';
+            sounds.menuMusic.pause();
             
-            // Переключаем на боевую музыку если она не включена
-            if (!sounds.battleMusic.src || sounds.battleMusic.paused) {
-                sounds.menuMusic.pause();
-                if (audioSettings.musicEnabled) {
-                    let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
-                    sounds.battleMusic.src = track;
-                    sounds.battleMusic.loop = true;
-                    sounds.battleMusic.play();
-                }
+            if (audioSettings.musicEnabled) {
+                let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
+                sounds.battleMusic.src = track;
+                sounds.battleMusic.loop = true;
+                sounds.battleMusic.play();
             }
             initGame();
         } else {
             canvas.style.display = 'none';
             document.getElementById('hud').style.display = 'none';
             
-            // Восстанавливаем музыку меню (не перезагружаем, продолжаем воспроизведение)
-            if (sounds.menuMusic.paused && audioSettings.musicEnabled) {
+            if (audioSettings.musicEnabled && sounds.menuMusic.paused) {
                 let track = audioSettings.selectedMenuMusic === 'random' ? getRandomTrack('menu') : audioSettings.selectedMenuMusic;
                 sounds.menuMusic.src = track;
                 sounds.menuMusic.loop = true;
                 sounds.menuMusic.play();
             }
             
-            document.getElementById(id === 'menu' ? 'menu' : id === 'settings' ? 'settings-screen' : 'brawlers-screen').style.display = 'flex';
-            
-            if (id === 'brawlers') renderList();
-            if (id === 'settings') initMusicSelectors();
+            if (id === 'menu') {
+                document.getElementById('menu').style.display = 'flex';
+            } else if (id === 'settings') {
+                document.getElementById('settings-screen').style.display = 'flex';
+                initMusicSelectors();
+            } else if (id === 'brawlers') {
+                document.getElementById('brawlers-screen').style.display = 'flex';
+                renderList();
+            }
         }
     }
 
@@ -677,9 +616,7 @@
             case 'Stu': p.x += Math.cos(angle) * 200; p.y += Math.sin(angle) * 200; break;
             case 'Bull':
             case 'Darryl': p.isFlying = true; let step = 0; let f = setInterval(() => { p.x += Math.cos(angle) * 12; p.y += Math.sin(angle) * 12; if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 50) hitEnemy(1000, false); if (++step > 25) { clearInterval(f); p.isFlying = false; } }, 20); break;
-            case 'El_Primo': p.isFlying = true; p.scale = 2.2;
-                let jx = p.x + Math.cos(angle) * 250, jy = p.y + Math.sin(angle) * 250;
-                let c = 0; let fly = setInterval(() => { p.x += (jx - p.x) / 5; p.y += (jy - p.y) / 5; if (++c >= 20) { clearInterval(fly); p.isFlying = false; p.scale = 1; if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 120) hitEnemy(1800, false); } }, 25); break;
+            case 'El_Primo': p.isFlying = true; p.scale = 2.2; let jx = p.x + Math.cos(angle) * 250, jy = p.y + Math.sin(angle) * 250; let c = 0; let fly = setInterval(() => { p.x += (jx - p.x) / 5; p.y += (jy - p.y) / 5; if (++c >= 20) { clearInterval(fly); p.isFlying = false; p.scale = 1; if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 120) hitEnemy(1800, false); } }, 25); break;
             case 'Barley': for (let i = 0; i < 5; i++) spawnBarleyBottle(angle + (i - 2) * 0.3, 250, 'fire', true); break;
             case 'Dynamike': zones.push({ x: p.x + Math.cos(angle) * 250, y: p.y + Math.sin(angle) * 250, r: 140, life: 60, type: 'boom', isBig: true, isUlt: true }); break;
         }
@@ -743,7 +680,7 @@
         if (ammo < BRAWLERS[current].maxAmmo) ammo += 1 / (BRAWLERS[current].reload / 16.6);
         if (p.boostTimer > 0) { p.boostTimer--; if (p.boostTimer <= 0) p.speedMult = 1; }
         if (p.shield > 0) p.shield--;
-        [activePin, enemyPin].forEach(p => { if (p.timer > 0) { p.timer--; p.scale += (p.timer > 300 ? 1.2 : 1.0 - p.scale) * 0.2; } else p.scale = 0; });
+        if (activePin.timer > 0) { activePin.timer--; activePin.scale += (activePin.timer > 300 ? 1.2 : 1.0 - activePin.scale) * 0.2; } else activePin.scale = 0;
         if (enemyAI) {
             let d = Math.hypot(p.x - enemy.x, p.y - enemy.y);
             if (d > 160) { let a = Math.atan2(p.y - enemy.y, p.x - enemy.x); enemy.x += Math.cos(a) * 1.5; enemy.y += Math.sin(a) * 1.5; }
@@ -774,32 +711,18 @@
             } else {
                 b.x += b.vx;
                 b.y += b.vy;
-                if (--b.life <= 0) {
-                    if (b.special === 'gene_main') {
-                        for (let j = -1; j <= 1; j++) {
-                            spawnBullet(b.angle + j * 0.25, 12, 25, false, 5, 'gene_split');
-                            bullets[bullets.length - 1].x = b.x;
-                            bullets[bullets.length - 1].y = b.y;
-                        }
-                    }
-                    bullets.splice(i, 1);
-                }
+                if (--b.life <= 0) bullets.splice(i, 1);
                 if (b.special === 'bounce') { if (b.x < 0 || b.x > canvas.width) b.vx *= -1; if (b.y < 0 || b.y > canvas.height) b.vy *= -1; }
                 if (b.special === 'bubble') { if (b.x < 0 || b.x > canvas.width) b.vx *= -1; if (b.y < 0 || b.y > canvas.height) b.vy *= -1; }
             }
             if (Math.hypot(b.x - enemy.x, b.y - enemy.y) < 30) {
-                if (b.special === 'pull') { enemy.x = p.x; enemy.y = p.y; }
-                if (b.special === 'poison') { let c = 0; let poi = setInterval(() => { hitEnemy(150, false); if (++c > 5) clearInterval(poi); }, 500); }
-                if (b.special === 'energy') { hitEnemy(800, true); }
                 hitEnemy(b.special === 'gene_split' ? 150 : 400, !b.isUlt);
                 if (b.special !== 'bubble' && b.special !== 'bounce') bullets.splice(i, 1);
             }
         });
         zones.forEach((z, i) => {
             if (z.type === 'gravity') { enemy.x += (z.x - enemy.x) * 0.1; enemy.y += (z.y - enemy.y) * 0.1; if (z.life === 1) hitEnemy(2000, false); }
-            if (z.type === 'stun' && Math.hypot(enemy.x - z.x, enemy.y - z.y) < z.r) hitEnemy(10, false);
             if (z.type === 'mine' && Math.hypot(enemy.x - z.x, enemy.y - z.y) < z.r) { hitEnemy(2000, true); zones.splice(i, 1); }
-            if (z.type === 'turret') { if (z.life % 30 === 0) spawnBullet(Math.atan2(enemy.y - z.y, enemy.x - z.x), 10, 40); }
             if (Math.hypot(enemy.x - z.x, enemy.y - z.y) < z.r) hitEnemy(5, false);
             if (--z.life <= 0) zones.splice(i, 1);
         });
@@ -811,21 +734,6 @@
     function draw() {
         ctx.fillStyle = "#2e7d32";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if ((joyR.active || joyU.active) && !pip.active) {
-            let j = joyU.active ? joyU : joyR;
-            let angle = Math.atan2(j.cy - j.y, j.cx - j.x);
-            let ind = joyU.active ? BRAWLERS[current].ultType : BRAWLERS[current].type;
-            ctx.fillStyle = joyU.active ? "rgba(255, 255, 0, 0.3)" : "rgba(255, 255, 255, 0.2)";
-            if (ind === 'nani_aim' || ind === 'pip') { ctx.beginPath(); ctx.arc(p.x + Math.cos(angle) * 320, p.y + Math.sin(angle) * 320, 40, 0, 7); ctx.fill(); }
-            else if (ind === 'gravity' || ind === 'throw' || ind === 'throw_triple') { ctx.beginPath(); ctx.arc(p.x + Math.cos(angle) * 250, p.y + Math.sin(angle) * 250, 100, 0, 7); ctx.fill(); }
-            else if (ind === 'spread' || ind === 'spread_heavy') {
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.arc(p.x, p.y, 220, angle - 0.5, angle + 0.5);
-                ctx.lineTo(p.x, p.y);
-                ctx.fill();
-            } else { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(angle); ctx.fillRect(0, -20, 350, 40); ctx.restore(); }
-        }
         ctx.fillStyle = "red";
         ctx.beginPath();
         ctx.arc(enemy.x, enemy.y, 30, 0, 7);
@@ -837,15 +745,46 @@
         ctx.translate(p.x, p.y);
         ctx.scale(p.scale, p.scale);
         if (p.shield > 0) { ctx.strokeStyle = "#4caf50"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(0, 0, 30, 0, 7); ctx.stroke(); }
-        if (p.boostTimer > 0) { ctx.shadowBlur = 15; ctx.shadowColor = "yellow"; ctx.strokeStyle = "yellow"; ctx.strokeRect(-22, -22, 44, 44); }
         ctx.fillStyle = BRAWLERS[current].color;
         ctx.beginPath();
         ctx.arc(0, 0, 22, 0, 7);
         ctx.fill();
         ctx.restore();
         drawPin(p.x, p.y, activePin);
-        drawPin(enemy.x, enemy.y, enemyPin);
         bullets.forEach(b => { ctx.fillStyle = b.special === 'poison' ? "#2ecc71" : b.isUlt ? "#ff00ff" : "white"; ctx.beginPath(); ctx.arc(b.x, b.y, b.size || 5, 0, 7); ctx.fill(); });
         zones.forEach(z => {
-            if (z.type === 'gravity') ctx.fillStyle = "rgba(0,0,0,0.6)";
-            else if (z.type === 'mine') ctx.fillStyle = "rgba(255,0,0,0.5
+            ctx.fillStyle = z.type === 'gravity' ? "rgba(0,0,0,0.6)" : z.type === 'mine' ? "rgba(255,0,0,0.5)" : "rgba(255,255,0,0.4)";
+            ctx.beginPath();
+            ctx.arc(z.x, z.y, z.r, 0, 7);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 0.2;
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(joyL.x, joyL.y, 60, 0, 7);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(joyR.x, joyR.y, 60, 0, 7);
+        ctx.fill();
+        if (isUltReady) { ctx.globalAlpha = 0.6; ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(joyU.x, joyU.y, 50, 0, 7); ctx.fill(); }
+        ctx.globalAlpha = 1;
+    }
+
+    window.addEventListener('load', () => {
+        loadSettings();
+        setSoundVolume(sounds.menuMusic, audioSettings.musicVolumeMenu);
+        setSoundVolume(sounds.battleMusic, audioSettings.musicVolumeBattle);
+        
+        if (audioSettings.musicEnabled) {
+            let track = audioSettings.selectedMenuMusic === 'random' ? getRandomTrack('menu') : audioSettings.selectedMenuMusic;
+            sounds.menuMusic.src = track;
+            sounds.menuMusic.loop = true;
+            sounds.menuMusic.play();
+        }
+        
+        sounds.battleMusic.loop = true;
+        renderList();
+    });
+</script>
+</body>
+</html>
