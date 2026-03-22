@@ -24,16 +24,7 @@
         .pin-btn { background: rgba(0, 0, 0, 0.7); border: 3px solid white; border-radius: 12px; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px #000; }
         .pin-menu { position: absolute; right: 65px; display: none; gap: 8px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.2); flex-direction: column; }
         .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; }
-        
-        /* РЕЖИМЫ */
-        #modes-screen { display: none; background: radial-gradient(circle, #0066ff, #003399); }
-        .modes-container { display: flex; flex-direction: column; gap: 20px; align-items: center; margin-top: 30px; }
-        .mode-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 4px solid #ffcc00; padding: 20px 40px; border-radius: 20px; font-size: 18px; cursor: pointer; color: white; min-width: 250px; text-align: center; z-index: 50; }
-        .mode-btn:hover { transform: scale(1.05); }
-        
-        .cups-display { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 10px; border: 3px solid #ffcc00; z-index: 60; }
-        .cups-display h3 { margin: 0 0 10px 0; color: #ffcc00; font-size: 16px; }
-        .cup-line { color: #fff; font-size: 14px; margin: 5px 0; }
+        .ai-btn { background: #ff4444 !important; color: white !important; margin-top: 10px; border-width: 3px; }
         
         /* НАСТРОЙКИ */
         #settings-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
@@ -48,9 +39,7 @@
         .toggle-btn.off { background: #aa0000; }
         .settings-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; }
-        .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 50; cursor: pointer; font-weight: bold; pointer-events: auto; }
-        
-        .game-info { position: absolute; top: 60px; left: 10px; background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 8px; border: 2px solid #fff; z-index: 30; pointer-events: none; font-size: 14px; color: #fff; }
+        .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 40; cursor: pointer; font-weight: bold; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -58,42 +47,19 @@
 <!-- ГЛАВНОЕ МЕНЮ -->
 <div id="menu" class="screen active" style="display: flex;">
     <button class="settings-btn" onclick="changeScreen('settings')">⚙️</button>
-    <div class="cups-display">
-        <h3>🏆 КУБКИ</h3>
-        <div class="cup-line">Всего: <span id="total-cups" style="color: #ffcc00; font-weight: bold;">0</span></div>
-        <div class="cup-line">Побед: <span id="wins-cups" style="color: #ffcc00; font-weight: bold;">0</span></div>
-    </div>
     <h1>BRAWL STARS</h1>
     <h2 id="active-name">ШЕЛЛИ</h2>
     <div id="char-preview" style="width:100px; height:100px; border-radius:50%; border:5px solid white; background:#bc42f5;"></div>
-    <button class="play-btn btn" onclick="changeScreen('modes')">ВЫБРАТЬ РЕЖИМ</button>
+    <button class="play-btn btn" onclick="changeScreen('game')">ИГРАТЬ</button>
     <button id="ai-toggle" class="btn ai-btn" onclick="toggleAI()">БОТ: ВЫКЛ</button>
     <button class="btn" style="margin-top:20px;" onclick="changeScreen('brawlers')">БОЙЦЫ</button>
 </div>
 
-<!-- ВЫБОР РЕЖИМА -->
-<div id="modes-screen" class="screen">
-    <button class="settings-btn" onclick="changeScreen('settings')">⚙️</button>
-    <div class="cups-display">
-        <h3>🏆 КУБКИ</h3>
-        <div class="cup-line">Всего: <span id="total-cups2" style="color: #ffcc00; font-weight: bold;">0</span></div>
-        <div class="cup-line">Побед: <span id="wins-cups2" style="color: #ffcc00; font-weight: bold;">0</span></div>
-    </div>
-    <h1 style="margin-bottom: 30px;">ВЫБЕРИ РЕЖИМ</h1>
-    <div class="modes-container">
-        <button class="mode-btn" onclick="startGame('showdown')">🌍 ШОУДАУН<br><span style="font-size: 12px;">Боевой королевский режим</span></button>
-        <button class="mode-btn" onclick="startGame('brawlball')">🏀 БРАУБОЛ<br><span style="font-size: 12px;">Командный режим 3v3</span></button>
-        <button class="mode-btn" onclick="startGame('classic')">⚔️ КЛАССИКА<br><span style="font-size: 12px;">1v1 Дуэль</span></button>
-    </div>
-    <button class="btn" style="margin-top: 40px; background: #ff6b6b;" onclick="changeScreen('menu')">НАЗАД</button>
-</div>
-
 <!-- ВЫБОР БОЙЦА -->
 <div id="brawlers-screen" class="screen">
-    <button class="settings-btn" onclick="changeScreen('settings')">⚙️</button>
     <h2>ВЫБЕРИ БОЙЦА</h2>
     <div class="scroll-container" id="list"></div>
-    <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">НАЗАД</button>
+    <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">ВЫБРАТЬ</button>
 </div>
 
 <!-- НАСТРОЙКИ -->
@@ -140,10 +106,6 @@
 <!-- HUD ИГРЫ -->
 <div id="hud">
     <button class="exit-btn" onclick="exitToMenu()">ВЫЙТИ</button>
-    <div class="game-info">
-        <div id="mode-display">Режим: КЛАССИКА</div>
-        <div id="enemy-name-display">Противник: БОТ</div>
-    </div>
     <div class="ult-container"><div id="ult-bar"></div></div>
     <div id="ammo-container" class="ammo-wrap"></div>
     <div class="pin-system">
@@ -163,24 +125,11 @@
 <script>
     // ========== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ==========
     let gameActive = false;
-    let gameMode = 'classic';
     let enemyAI = false;
     let current = 'Shelly';
     let ultCharge = 0;
     let isUltReady = false;
     let ammo = 3;
-    
-    // Система кубков
-    let playerStats = {
-        totalCups: 0,
-        winsCups: 0
-    };
-    
-    // Боты
-    const BOT_NAMES = ['Гром', 'Эдгар', 'Барлей', 'Котар', 'Лион', 'Спайк', 'Сузи', 'Джесси'];
-    const BOT_BRAWLERS = ['Shelly', 'Colt', 'Bull', 'Darryl', 'Jessie', 'Edgar', 'Crow', 'Mortis'];
-    let enemyBotName = BOT_NAMES[0];
-    let enemyBotBrawler = BOT_BRAWLERS[0];
     
     // Настройки звука
     let audioSettings = {
@@ -191,15 +140,42 @@
         sfxEnabled: true
     };
 
+    // ========== СПИСОК ВСЕХ МУЗЫК ==========
     const MUSIC_TRACKS = {
-        menu: ['Song/Menu_1.m4a', 'Song/Menu_2.ogg', 'Song/Menu_3.ogg', 'Song/Menu_4.ogg', 'Song/Menu_5.ogg', 'Song/Menu_6.ogg', 'Song/Menu_7.ogg', 'Song/Menu_8.ogg'],
-        battle: ['Song/Fight_1.mp3', 'Song/Fight_2.mp3', 'Song/Fight_3.mp3', 'Song/Fight_4.mp3', 'Song/Fight_4.ogg', 'Song/Fight_5.ogg', 'Song/Fight_6.ogg', 'Song/Fight_7.ogg', 'Song/Fight_8.ogg', 'Song/Fight_9.ogg', 'Song/Fight_10.ogg', 'Song/Fight_11.ogg', 'Song/Fight_12.ogg'],
+        menu: [
+            'Song/Menu_1.m4a',
+            'Song/Menu_2.ogg',
+            'Song/Menu_3.ogg',
+            'Song/Menu_4.ogg',
+            'Song/Menu_5.ogg',
+            'Song/Menu_6.ogg',
+            'Song/Menu_7.ogg',
+            'Song/Menu_8.ogg'
+        ],
+        
+        battle: [
+            'Song/Fight_1.mp3',
+            'Song/Fight_2.mp3',
+            'Song/Fight_3.mp3',
+            'Song/Fight_4.mp3',
+            'Song/Fight_4.ogg',
+            'Song/Fight_5.ogg',
+            'Song/Fight_6.ogg',
+            'Song/Fight_7.ogg',
+            'Song/Fight_8.ogg',
+            'Song/Fight_9.ogg',
+            'Song/Fight_10.ogg',
+            'Song/Fight_11.ogg',
+            'Song/Fight_12.ogg'
+        ],
+        
         click: ['Song/Menu_click.ogg', 'Song/Button.ogg'],
         shoot: ['Song/Goal.ogg', 'Song/Drop_box.ogg', 'Song/Button.ogg'],
         ult: ['Song/Ulti_ready.ogg', 'Song/Victory.ogg', 'Song/Reveal_epic_card.ogg'],
         hit: ['Song/Victory.ogg', 'Song/Win_screen.ogg', 'Song/Doubletakedown_vo.ogg']
     };
 
+    // ========== ЗВУКОВАЯ СИСТЕМА ==========
     const sounds = {
         menuMusic: new Audio(),
         battleMusic: new Audio(),
@@ -229,6 +205,7 @@
         }
     }
 
+    // ========== ПЕРСОНАЖИ ==========
     const BRAWLERS = {
         Shelly: { color: '#bc42f5', speed: 4, reload: 1500, type: 'spread', ultType: 'spread_wide', ultChargeRate: 15, maxAmmo: 3 },
         Colt: { color: '#f54242', speed: 4.5, reload: 1300, type: 'line', ultType: 'line_long', ultChargeRate: 10, maxAmmo: 3 },
@@ -254,6 +231,7 @@
         Frank: { color: '#9575cd', speed: 3.2, reload: 1400, type: 'spread_heavy', ultType: 'stun_wave', ultChargeRate: 25, maxAmmo: 3 }
     };
 
+    // ========== ПЕРЕМЕННЫЕ ИГРЫ ==========
     let p = { x: 0, y: 0, scale: 1, isFlying: false, speedMult: 1, boostTimer: 0, shield: 0 };
     let pip = { active: false, x: 0, y: 0, angle: 0, life: 0 };
     let enemy = { x: 200, y: 150, hp: 30000, maxHp: 30000 };
@@ -266,47 +244,6 @@
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-
-    // ========== ФУНКЦИИ РЕЖИМОВ ==========
-    function startGame(mode) {
-        gameMode = mode;
-        const randomIndex = Math.floor(Math.random() * BOT_NAMES.length);
-        enemyBotName = BOT_NAMES[randomIndex];
-        enemyBotBrawler = BOT_BRAWLERS[randomIndex];
-        
-        document.getElementById('mode-display').textContent = 
-            gameMode === 'showdown' ? 'Режим: ШОУДАУН' :
-            gameMode === 'brawlball' ? 'Режим: БРАУБОЛ' : 'Режим: КЛАССИКА';
-        document.getElementById('enemy-name-display').textContent = `Противник: ${enemyBotName}`;
-        
-        changeScreen('game');
-    }
-
-    function updateCupsDisplay() {
-        document.getElementById('total-cups').textContent = playerStats.totalCups;
-        document.getElementById('wins-cups').textContent = playerStats.winsCups;
-        document.getElementById('total-cups2').textContent = playerStats.totalCups;
-        document.getElementById('wins-cups2').textContent = playerStats.winsCups;
-    }
-
-    function addCups(amount) {
-        playerStats.totalCups += amount;
-        playerStats.winsCups += amount;
-        updateCupsDisplay();
-        saveStats();
-    }
-
-    function saveStats() {
-        localStorage.setItem('playerStats', JSON.stringify(playerStats));
-    }
-
-    function loadStats() {
-        const saved = localStorage.getItem('playerStats');
-        if (saved) {
-            playerStats = JSON.parse(saved);
-            updateCupsDisplay();
-        }
-    }
 
     // ========== ФУНКЦИИ НАСТРОЕК ==========
     function changeMusicVolume(type, value) {
@@ -457,30 +394,22 @@
             
             if (audioSettings.musicEnabled) {
                 sounds.battleMusic.src = getRandomTrack('battle');
+                sounds.battleMusic.loop = true;
                 sounds.battleMusic.play();
             }
             initGame();
         } else {
             canvas.style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            
-            if (id === 'menu') {
-                document.getElementById('menu').style.display = 'flex';
-            } else if (id === 'modes') {
-                document.getElementById('modes-screen').style.display = 'flex';
-            } else if (id === 'brawlers') {
-                document.getElementById('brawlers-screen').style.display = 'flex';
-                renderList();
-            } else if (id === 'settings') {
-                document.getElementById('settings-screen').style.display = 'flex';
-            }
-            
+            document.getElementById(id === 'menu' ? 'menu' : id === 'settings' ? 'settings-screen' : 'brawlers-screen').style.display = 'flex';
             sounds.battleMusic.pause();
             
             if (audioSettings.musicEnabled && id !== 'settings') {
                 sounds.menuMusic.src = getRandomTrack('menu');
+                sounds.menuMusic.loop = true;
                 sounds.menuMusic.play();
             }
+            if (id === 'brawlers') renderList();
         }
     }
 
@@ -629,11 +558,9 @@
         enemy.hp -= dmg;
         playSound('hit');
         if (enemy.hp <= 0) {
-            addCups(30);
-            alert(`Победа! +30 кубков`);
-            gameActive = false;
-            exitToMenu();
-            return;
+            enemy.hp = enemy.maxHp;
+            enemy.x = canvas.width / 2;
+            enemy.y = 150;
         }
         if (canCharge && ultCharge < 100) { ultCharge += BRAWLERS[current].ultChargeRate; }
     }
@@ -802,5 +729,18 @@
 
     window.addEventListener('load', () => {
         loadSettings();
-        loadStats();
+        setSoundVolume(sounds.menuMusic, audioSettings.musicVolumeMenu);
+        setSoundVolume(sounds.battleMusic, audioSettings.musicVolumeBattle);
         
+        if (audioSettings.musicEnabled) {
+            sounds.menuMusic.src = getRandomTrack('menu');
+            sounds.menuMusic.loop = true;
+            sounds.menuMusic.play();
+        }
+        
+        sounds.battleMusic.loop = true;
+        renderList();
+    });
+</script>
+</body>
+</html>
