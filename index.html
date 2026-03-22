@@ -8,64 +8,66 @@
         body { margin: 0; background: #004dc0; font-family: 'Arial Black', sans-serif; overflow: hidden; color: white; touch-action: none; }
         .screen { position: absolute; width: 100vw; height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
         #menu { display: flex; background: radial-gradient(circle, #0066ff, #003399); }
-        .btn { background: #ffcc00; border: 4px solid #000; padding: 10px 20px; border-radius: 12px; color: #000; cursor: pointer; text-transform: uppercase; font-size: 14px; margin: 5px; box-shadow: 0 4px #b38f00; z-index: 50; pointer-events: auto; }
-        .btn:active { transform: translateY(2px); }
+        .btn { background: #ffcc00; border: 4px solid #000; padding: 10px 20px; border-radius: 12px; color: #000; cursor: pointer; text-transform: uppercase; font-size: 14px; margin: 5px; box-shadow: 0 4px #b38f00; z-index: 50; }
         .play-btn { padding: 20px 80px; font-size: 30px; background: #00ff00; margin-top: 20px; }
         .scroll-container { width: 90%; height: 60%; overflow-y: auto; display: flex; flex-wrap: wrap; justify-content: center; padding: 10px; border: 2px solid #555; border-radius: 15px; background: #222; }
         .card { width: 110px; height: 140px; background: #333; border: 3px solid #fff; border-radius: 15px; margin: 10px; text-align: center; cursor: pointer; display: flex; flex-direction: column; overflow: hidden; }
         canvas { display: none; background: #2e7d32; }
         #hud { position: absolute; top: 10px; width: 100%; display: none; flex-direction: column; align-items: center; z-index: 30; pointer-events: none; }
-        .exit-btn { position: absolute; top: 10px; left: 10px; z-index: 40; background: #ff4444; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; pointer-events: auto; cursor: pointer; }
+        .exit-btn { position: absolute; top: 10px; left: 10px; z-index: 40; background: #ff4444; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; pointer-events: auto; }
         .ult-container { width: 150px; height: 16px; background: #333; border: 2px solid #fff; border-radius: 8px; overflow: hidden; }
         #ult-bar { width: 0%; height: 100%; background: #ffff00; }
         .ammo-wrap { display: flex; gap: 4px; margin-top: 5px; }
         .ammo-cell { width: 35px; height: 8px; background: #555; border: 1px solid #fff; border-radius: 4px; }
         .ammo-fill { width: 100%; height: 100%; background: #ffaa00; }
         .pin-system { position: absolute; right: 25px; top: 400%; display: flex; align-items: center; z-index: 100; pointer-events: auto; }
-        .pin-btn { background: rgba(0, 0, 0, 0.7); border: 3px solid white; border-radius: 12px; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px #000; pointer-events: auto; }
+        .pin-btn { background: rgba(0, 0, 0, 0.7); border: 3px solid white; border-radius: 12px; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px #000; }
         .pin-menu { position: absolute; right: 65px; display: none; gap: 8px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.2); flex-direction: column; }
-        .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; pointer-events: auto; }
-        .ai-btn { background: #ff4444 !important; color: white !important; margin-top: 10px; border-width: 3px; }
+        .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; }
         
-        #settings-screen { display: none; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
-        .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        /* НАСТРОЙКИ */
+        #settings-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
+        .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; }
         .settings-container h2 { text-align: center; color: #ffcc00; margin-bottom: 20px; font-size: 24px; }
         .setting-item { margin: 15px 0; }
         .setting-label { color: #fff; font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; }
         .volume-slider { width: 100%; height: 8px; background: #333; border-radius: 5px; cursor: pointer; -webkit-appearance: none; appearance: none; }
         .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: #ffcc00; border-radius: 50%; cursor: pointer; }
         .volume-slider::-moz-range-thumb { width: 20px; height: 20px; background: #ffcc00; border-radius: 50%; cursor: pointer; border: none; }
-        .toggle-btn { width: 100%; padding: 10px; background: #00aa00; color: white; border: 2px solid #000; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin: 5px 0; pointer-events: auto; }
+        .toggle-btn { width: 100%; padding: 10px; background: #00aa00; color: white; border: 2px solid #000; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin: 5px 0; }
+        .toggle-btn.off { background: #aa0000; }
         .settings-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; pointer-events: auto; }
+        .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; }
         .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 40; cursor: pointer; font-weight: bold; pointer-events: auto; }
         
+        /* МУЗЫКА */
         .music-selector { margin: 15px 0; }
-        .music-selector label { color: #fff; display: block; margin-bottom: 8px; font-size: 14px; }
-        .music-selector select { width: 100%; padding: 8px; background: #333; color: #ffcc00; border: 2px solid #ffcc00; border-radius: 8px; cursor: pointer; font-size: 12px; pointer-events: auto; }
-        
-        .section-title { color: #ffcc00; font-size: 16px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #ffcc00; padding-bottom: 8px; }
+        .music-selector label { color: #fff; display: block; margin-bottom: 8px; font-size: 13px; }
+        .music-selector select { width: 100%; padding: 8px; background: #333; color: #ffcc00; border: 2px solid #ffcc00; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .section-title { color: #ffcc00; font-size: 14px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; border-bottom: 2px solid #ffcc00; padding-bottom: 8px; }
     </style>
 </head>
 <body>
 
+<!-- ГЛАВНОЕ МЕНЮ -->
 <div id="menu" class="screen active" style="display: flex;">
     <button class="settings-btn" onclick="changeScreen('settings')">⚙️</button>
     <h1>BRAWL STARS</h1>
     <h2 id="active-name">ШЕЛЛИ</h2>
     <div id="char-preview" style="width:100px; height:100px; border-radius:50%; border:5px solid white; background:#bc42f5;"></div>
     <button class="play-btn btn" onclick="changeScreen('game')">ИГРАТЬ</button>
-    <button id="ai-toggle" class="btn ai-btn" onclick="toggleAI()">БОТ: ВЫКЛ</button>
     <button class="btn" style="margin-top:20px;" onclick="changeScreen('brawlers')">БОЙЦЫ</button>
 </div>
 
+<!-- ВЫБОР БОЙЦА -->
 <div id="brawlers-screen" class="screen">
     <h2>ВЫБЕРИ БОЙЦА</h2>
     <div class="scroll-container" id="list"></div>
     <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">ВЫБРАТЬ</button>
 </div>
 
-<div id="settings-screen" class="screen" style="display: flex; align-items: center; justify-content: center;">
+<!-- НАСТРОЙКИ -->
+<div id="settings-screen" class="screen">
     <div class="settings-container">
         <h2>⚙️ НАСТРОЙКИ</h2>
         
@@ -84,7 +86,7 @@
                 <option value="random">🔀 Случайная</option>
             </select>
         </div>
-
+        
         <div class="section-title">🔊 ГРОМКОСТЬ</div>
         
         <div class="setting-item">
@@ -123,6 +125,7 @@
     </div>
 </div>
 
+<!-- HUD ИГРЫ -->
 <div id="hud">
     <button class="exit-btn" onclick="exitToMenu()">ВЫЙТИ</button>
     <div class="ult-container"><div id="ult-bar"></div></div>
@@ -142,13 +145,14 @@
 <canvas id="gameCanvas"></canvas>
 
 <script>
+    // ========== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ==========
     let gameActive = false;
-    let enemyAI = false;
     let current = 'Shelly';
     let ultCharge = 0;
     let isUltReady = false;
     let ammo = 3;
     
+    // Настройки звука
     let audioSettings = {
         musicVolumeMenu: 100,
         musicVolumeBattle: 100,
@@ -159,6 +163,7 @@
         selectedBattleMusic: 'random'
     };
 
+    // ========== СПИСОК ВСЕХ МУЗЫК ==========
     const MUSIC_TRACKS = {
         menu: {
             'random': 'Случайная',
@@ -171,6 +176,7 @@
             'Song/Menu_7.ogg': 'Menu 7',
             'Song/Menu_8.ogg': 'Menu 8'
         },
+        
         battle: {
             'random': 'Случайная',
             'Song/Fight_1.mp3': 'Fight 1',
@@ -187,10 +193,12 @@
             'Song/Fight_11.ogg': 'Fight 11',
             'Song/Fight_12.ogg': 'Fight 12'
         },
+        
         randomMenu: ['Song/Menu_1.m4a', 'Song/Menu_2.ogg', 'Song/Menu_3.ogg', 'Song/Menu_4.ogg', 'Song/Menu_5.ogg', 'Song/Menu_6.ogg', 'Song/Menu_7.ogg', 'Song/Menu_8.ogg'],
         randomBattle: ['Song/Fight_1.mp3', 'Song/Fight_2.mp3', 'Song/Fight_3.mp3', 'Song/Fight_4.mp3', 'Song/Fight_4.ogg', 'Song/Fight_5.ogg', 'Song/Fight_6.ogg', 'Song/Fight_7.ogg', 'Song/Fight_8.ogg', 'Song/Fight_9.ogg', 'Song/Fight_10.ogg', 'Song/Fight_11.ogg', 'Song/Fight_12.ogg']
     };
     
+    // SFX ЗВУКИ
     const SFX_TRACKS = {
         click: ['Song/Menu_click.ogg', 'Song/Button.ogg'],
         shoot: ['Song/Goal.ogg', 'Song/Drop_box.ogg', 'Song/Button.ogg'],
@@ -198,6 +206,7 @@
         hit: ['Song/Victory.ogg', 'Song/Win_screen.ogg', 'Song/Doubletakedown_vo.ogg']
     };
 
+    // ========== ЗВУКОВАЯ СИСТЕМА ==========
     const sounds = {
         menuMusic: new Audio(),
         battleMusic: new Audio(),
@@ -210,12 +219,14 @@
 
     function getRandomTrack(type) {
         const tracks = MUSIC_TRACKS['random' + (type.charAt(0).toUpperCase() + type.slice(1))] || [];
-        return tracks.length > 0 ? tracks[Math.floor(Math.random() * tracks.length)] : 'Song/Menu_2.ogg';
+        if (tracks.length === 0) return 'Song/Menu_2.ogg';
+        return tracks[Math.floor(Math.random() * tracks.length)];
     }
 
     function getRandomSFX(type) {
         const tracks = SFX_TRACKS[type] || [];
-        return tracks.length > 0 ? tracks[Math.floor(Math.random() * tracks.length)] : '';
+        if (tracks.length === 0) return '';
+        return tracks[Math.floor(Math.random() * tracks.length)];
     }
 
     function playSound(type) {
@@ -229,6 +240,7 @@
         }
     }
 
+    // ========== ПЕРСОНАЖИ ==========
     const BRAWLERS = {
         Shelly: { color: '#bc42f5', speed: 4, reload: 1500, type: 'spread', ultType: 'spread_wide', ultChargeRate: 15, maxAmmo: 3 },
         Colt: { color: '#f54242', speed: 4.5, reload: 1300, type: 'line', ultType: 'line_long', ultChargeRate: 10, maxAmmo: 3 },
@@ -254,6 +266,7 @@
         Frank: { color: '#9575cd', speed: 3.2, reload: 1400, type: 'spread_heavy', ultType: 'stun_wave', ultChargeRate: 25, maxAmmo: 3 }
     };
 
+    // ========== ПЕРЕМЕННЫЕ ИГРЫ ==========
     let p = { x: 0, y: 0, scale: 1, isFlying: false, speedMult: 1, boostTimer: 0, shield: 0 };
     let pip = { active: false, x: 0, y: 0, angle: 0, life: 0 };
     let enemy = { x: 200, y: 150, hp: 30000, maxHp: 30000 };
@@ -262,10 +275,12 @@
     let joyR = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
     let joyU = { active: false, x: 0, y: 0, cx: 0, cy: 0, id: null };
     let activePin = { type: '', timer: 0, scale: 0 };
+    let enemyPin = { type: '', timer: 0, scale: 0 };
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
+    // ========== ФУНКЦИИ МУЗЫКИ ==========
     function changeMenuMusic(value) {
         audioSettings.selectedMenuMusic = value;
         if (!gameActive && audioSettings.musicEnabled) {
@@ -290,6 +305,7 @@
         saveSettings();
     }
 
+    // ========== ФУНКЦИИ НАСТРОЕК ==========
     function changeMusicVolume(type, value) {
         if (type === 'menu') {
             audioSettings.musicVolumeMenu = parseInt(value);
@@ -315,6 +331,8 @@
         if (audioSettings.musicEnabled) {
             btn.textContent = '🔊 МУЗЫКА: ВКЛ';
             btn.style.background = '#00aa00';
+            if (!gameActive) sounds.menuMusic.play();
+            else sounds.battleMusic.play();
         } else {
             btn.textContent = '🔇 МУЗЫКА: ВЫКЛ';
             btn.style.background = '#aa0000';
@@ -413,14 +431,7 @@
         });
     }
 
-    function toggleAI() {
-        enemyAI = !enemyAI;
-        const btn = document.getElementById('ai-toggle');
-        btn.innerText = enemyAI ? "БОТ: ВКЛ" : "БОТ: ВЫКЛ";
-        btn.style.background = enemyAI ? "#00ff00" : "#ff4444";
-        playSound('click');
-    }
-
+    // ========== ФУНКЦИИ ИГРЫ ==========
     function togglePinMenu() {
         const m = document.getElementById('pin-menu');
         m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
@@ -681,10 +692,6 @@
         if (p.boostTimer > 0) { p.boostTimer--; if (p.boostTimer <= 0) p.speedMult = 1; }
         if (p.shield > 0) p.shield--;
         if (activePin.timer > 0) { activePin.timer--; activePin.scale += (activePin.timer > 300 ? 1.2 : 1.0 - activePin.scale) * 0.2; } else activePin.scale = 0;
-        if (enemyAI) {
-            let d = Math.hypot(p.x - enemy.x, p.y - enemy.y);
-            if (d > 160) { let a = Math.atan2(p.y - enemy.y, p.x - enemy.x); enemy.x += Math.cos(a) * 1.5; enemy.y += Math.sin(a) * 1.5; }
-        }
         if (pip.active) {
             if (joyL.active) { let dx = joyL.cx - joyL.x, dy = joyL.cy - joyL.y; pip.angle = Math.atan2(dy, dx); }
             pip.x += Math.cos(pip.angle) * 7;
@@ -716,7 +723,7 @@
                 if (b.special === 'bubble') { if (b.x < 0 || b.x > canvas.width) b.vx *= -1; if (b.y < 0 || b.y > canvas.height) b.vy *= -1; }
             }
             if (Math.hypot(b.x - enemy.x, b.y - enemy.y) < 30) {
-                hitEnemy(b.special === 'gene_split' ? 150 : 400, !b.isUlt);
+                hitEnemy(400, !b.isUlt);
                 if (b.special !== 'bubble' && b.special !== 'bounce') bullets.splice(i, 1);
             }
         });
