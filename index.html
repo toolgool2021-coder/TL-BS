@@ -28,7 +28,7 @@
         
         /* НАСТРОЙКИ */
         #settings-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
-        .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 400px; width: 90%; }
+        .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 450px; width: 90%; max-height: 90vh; overflow-y: auto; }
         .settings-container h2 { text-align: center; color: #ffcc00; margin-bottom: 20px; font-size: 24px; }
         .setting-item { margin: 15px 0; }
         .setting-label { color: #fff; font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; }
@@ -40,6 +40,14 @@
         .settings-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; }
         .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 40; cursor: pointer; font-weight: bold; pointer-events: auto; }
+        
+        /* ВЫБОР МУЗЫКИ */
+        .music-selector { margin: 15px 0; }
+        .music-selector label { color: #fff; display: block; margin-bottom: 8px; font-size: 14px; }
+        .music-selector select { width: 100%; padding: 8px; background: #333; color: #ffcc00; border: 2px solid #ffcc00; border-radius: 8px; cursor: pointer; font-size: 12px; }
+        .music-selector select option { background: #333; color: #ffcc00; }
+        
+        .section-title { color: #ffcc00; font-size: 16px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #ffcc00; padding-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -65,7 +73,25 @@
 <!-- НАСТРОЙКИ -->
 <div id="settings-screen" class="screen">
     <div class="settings-container">
-        <h2>НАСТРОЙКИ ЗВУКА</h2>
+        <h2>⚙️ НАСТРОЙКИ</h2>
+        
+        <div class="section-title">🎵 ВЫБОР МУЗЫКИ</div>
+        
+        <div class="music-selector">
+            <label>Музыка меню:</label>
+            <select id="menu-music-select" onchange="changeMenuMusic(this.value)">
+                <option value="random">🔀 Случайная</option>
+            </select>
+        </div>
+        
+        <div class="music-selector">
+            <label>Музыка боя:</label>
+            <select id="battle-music-select" onchange="changeBattleMusic(this.value)">
+                <option value="random">🔀 Случайная</option>
+            </select>
+        </div>
+
+        <div class="section-title">🔊 ГРОМКОСТЬ</div>
         
         <div class="setting-item">
             <div class="setting-label">
@@ -130,6 +156,9 @@
     let ultCharge = 0;
     let isUltReady = false;
     let ammo = 3;
+    let isInGameMenu = false; // Флаг для меню в игре
+    let currentMenuMusic = null; // Текущий трек меню
+    let currentBattleMusic = null; // Текущий трек боя
     
     // Настройки звука
     let audioSettings = {
@@ -137,12 +166,43 @@
         musicVolumeBattle: 100,
         sfxVolume: 100,
         musicEnabled: true,
-        sfxEnabled: true
+        sfxEnabled: true,
+        selectedMenuMusic: 'random',
+        selectedBattleMusic: 'random'
     };
 
     // ========== СПИСОК ВСЕХ МУЗЫК ==========
     const MUSIC_TRACKS = {
-        menu: [
+        menu: {
+            'random': 'Случайная',
+            'Song/Menu_1.m4a': 'Menu 1',
+            'Song/Menu_2.ogg': 'Menu 2',
+            'Song/Menu_3.ogg': 'Menu 3',
+            'Song/Menu_4.ogg': 'Menu 4',
+            'Song/Menu_5.ogg': 'Menu 5',
+            'Song/Menu_6.ogg': 'Menu 6',
+            'Song/Menu_7.ogg': 'Menu 7',
+            'Song/Menu_8.ogg': 'Menu 8'
+        },
+        
+        battle: {
+            'random': 'Случайная',
+            'Song/Fight_1.mp3': 'Fight 1',
+            'Song/Fight_2.mp3': 'Fight 2',
+            'Song/Fight_3.mp3': 'Fight 3',
+            'Song/Fight_4.mp3': 'Fight 4',
+            'Song/Fight_4.ogg': 'Fight 4 (OGG)',
+            'Song/Fight_5.ogg': 'Fight 5',
+            'Song/Fight_6.ogg': 'Fight 6',
+            'Song/Fight_7.ogg': 'Fight 7',
+            'Song/Fight_8.ogg': 'Fight 8',
+            'Song/Fight_9.ogg': 'Fight 9',
+            'Song/Fight_10.ogg': 'Fight 10',
+            'Song/Fight_11.ogg': 'Fight 11',
+            'Song/Fight_12.ogg': 'Fight 12'
+        },
+        
+        randomMenu: [
             'Song/Menu_1.m4a',
             'Song/Menu_2.ogg',
             'Song/Menu_3.ogg',
@@ -153,7 +213,7 @@
             'Song/Menu_8.ogg'
         ],
         
-        battle: [
+        randomBattle: [
             'Song/Fight_1.mp3',
             'Song/Fight_2.mp3',
             'Song/Fight_3.mp3',
@@ -167,8 +227,11 @@
             'Song/Fight_10.ogg',
             'Song/Fight_11.ogg',
             'Song/Fight_12.ogg'
-        ],
-        
+        ]
+    };
+    
+    // SFX ЗВУКИ
+    const SFX_TRACKS = {
         click: ['Song/Menu_click.ogg', 'Song/Button.ogg'],
         shoot: ['Song/Goal.ogg', 'Song/Drop_box.ogg', 'Song/Button.ogg'],
         ult: ['Song/Ulti_ready.ogg', 'Song/Victory.ogg', 'Song/Reveal_epic_card.ogg'],
@@ -179,29 +242,33 @@
     const sounds = {
         menuMusic: new Audio(),
         battleMusic: new Audio(),
-        click: new Audio(),
-        shoot: new Audio(),
-        ult: new Audio(),
-        hit: new Audio()
+        sfx: new Audio()
     };
 
     function setSoundVolume(sound, volume) {
         sound.volume = volume / 100;
     }
 
-    function getRandomTrack(trackType) {
-        const tracks = MUSIC_TRACKS[trackType] || [];
+    function getRandomTrack(type) {
+        const tracks = MUSIC_TRACKS['random' + (type.charAt(0).toUpperCase() + type.slice(1))] || [];
         if (tracks.length === 0) return 'Song/Menu_2.ogg';
+        return tracks[Math.floor(Math.random() * tracks.length)];
+    }
+
+    function getRandomSFX(type) {
+        const tracks = SFX_TRACKS[type] || [];
+        if (tracks.length === 0) return '';
         return tracks[Math.floor(Math.random() * tracks.length)];
     }
 
     function playSound(type) {
         if (!audioSettings.sfxEnabled) return;
-        let sound = sounds[type];
-        if (sound) {
-            sound.currentTime = 0;
-            sound.volume = audioSettings.sfxVolume / 100;
-            sound.play().catch(e => console.log('Sound play error:', e));
+        let track = getRandomSFX(type);
+        if (track) {
+            sounds.sfx.src = track;
+            sounds.sfx.currentTime = 0;
+            sounds.sfx.volume = audioSettings.sfxVolume / 100;
+            sounds.sfx.play().catch(e => console.log('SFX play error:', e));
         }
     }
 
@@ -245,6 +312,31 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
+    // ========== ФУНКЦИИ МУЗЫКИ ==========
+    function changeMenuMusic(value) {
+        audioSettings.selectedMenuMusic = value;
+        if (!gameActive && audioSettings.musicEnabled) {
+            sounds.menuMusic.pause();
+            let track = value === 'random' ? getRandomTrack('menu') : value;
+            sounds.menuMusic.src = track;
+            sounds.menuMusic.loop = true;
+            sounds.menuMusic.play();
+        }
+        saveSettings();
+    }
+
+    function changeBattleMusic(value) {
+        audioSettings.selectedBattleMusic = value;
+        if (gameActive && audioSettings.musicEnabled) {
+            sounds.battleMusic.pause();
+            let track = value === 'random' ? getRandomTrack('battle') : value;
+            sounds.battleMusic.src = track;
+            sounds.battleMusic.loop = true;
+            sounds.battleMusic.play();
+        }
+        saveSettings();
+    }
+
     // ========== ФУНКЦИИ НАСТРОЕК ==========
     function changeMusicVolume(type, value) {
         if (type === 'menu') {
@@ -271,8 +363,15 @@
         if (audioSettings.musicEnabled) {
             btn.textContent = '🔊 МУЗЫКА: ВКЛ';
             btn.style.background = '#00aa00';
-            if (!gameActive) sounds.menuMusic.play();
-            else sounds.battleMusic.play();
+            if (!gameActive) {
+                let track = audioSettings.selectedMenuMusic === 'random' ? getRandomTrack('menu') : audioSettings.selectedMenuMusic;
+                sounds.menuMusic.src = track;
+                sounds.menuMusic.play();
+            } else {
+                let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
+                sounds.battleMusic.src = track;
+                sounds.battleMusic.play();
+            }
         } else {
             btn.textContent = '🔇 МУЗЫКА: ВЫКЛ';
             btn.style.background = '#aa0000';
@@ -301,7 +400,9 @@
             musicVolumeBattle: 100,
             sfxVolume: 100,
             musicEnabled: true,
-            sfxEnabled: true
+            sfxEnabled: true,
+            selectedMenuMusic: 'random',
+            selectedBattleMusic: 'random'
         };
         document.getElementById('music-menu-slider').value = 100;
         document.getElementById('music-battle-slider').value = 100;
@@ -313,6 +414,8 @@
         document.getElementById('toggle-music').style.background = '#00aa00';
         document.getElementById('toggle-sfx').textContent = '📢 ЗВУКИ: ВКЛ';
         document.getElementById('toggle-sfx').style.background = '#00aa00';
+        document.getElementById('menu-music-select').value = 'random';
+        document.getElementById('battle-music-select').value = 'random';
         saveSettings();
     }
 
@@ -330,6 +433,8 @@
             document.getElementById('music-menu-vol').textContent = audioSettings.musicVolumeMenu + '%';
             document.getElementById('music-battle-vol').textContent = audioSettings.musicVolumeBattle + '%';
             document.getElementById('sfx-vol').textContent = audioSettings.sfxVolume + '%';
+            document.getElementById('menu-music-select').value = audioSettings.selectedMenuMusic;
+            document.getElementById('battle-music-select').value = audioSettings.selectedBattleMusic;
             
             if (!audioSettings.musicEnabled) {
                 document.getElementById('toggle-music').textContent = '🔇 МУЗЫКА: ВЫКЛ';
@@ -340,6 +445,29 @@
                 document.getElementById('toggle-sfx').style.background = '#aa0000';
             }
         }
+    }
+
+    function initMusicSelectors() {
+        const menuSelect = document.getElementById('menu-music-select');
+        const battleSelect = document.getElementById('battle-music-select');
+        
+        Object.entries(MUSIC_TRACKS.menu).forEach(([key, value]) => {
+            if (key !== 'random' && !menuSelect.querySelector(`option[value="${key}"]`)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                menuSelect.appendChild(option);
+            }
+        });
+        
+        Object.entries(MUSIC_TRACKS.battle).forEach(([key, value]) => {
+            if (key !== 'random' && !battleSelect.querySelector(`option[value="${key}"]`)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = value;
+                battleSelect.appendChild(option);
+            }
+        });
     }
 
     // ========== ФУНКЦИИ ИГРЫ ==========
@@ -384,32 +512,44 @@
     }
 
     function changeScreen(id) {
-        playSound('click');
+        if (id !== 'game') {
+            playSound('click');
+            isInGameMenu = false;
+        }
+        
         document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
         
         if (id === 'game') {
             canvas.style.display = 'block';
             document.getElementById('hud').style.display = 'flex';
-            sounds.menuMusic.pause();
             
-            if (audioSettings.musicEnabled) {
-                sounds.battleMusic.src = getRandomTrack('battle');
-                sounds.battleMusic.loop = true;
-                sounds.battleMusic.play();
+            // Переключаем на боевую музыку если она не включена
+            if (!sounds.battleMusic.src || sounds.battleMusic.paused) {
+                sounds.menuMusic.pause();
+                if (audioSettings.musicEnabled) {
+                    let track = audioSettings.selectedBattleMusic === 'random' ? getRandomTrack('battle') : audioSettings.selectedBattleMusic;
+                    sounds.battleMusic.src = track;
+                    sounds.battleMusic.loop = true;
+                    sounds.battleMusic.play();
+                }
             }
             initGame();
         } else {
             canvas.style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            document.getElementById(id === 'menu' ? 'menu' : id === 'settings' ? 'settings-screen' : 'brawlers-screen').style.display = 'flex';
-            sounds.battleMusic.pause();
             
-            if (audioSettings.musicEnabled && id !== 'settings') {
-                sounds.menuMusic.src = getRandomTrack('menu');
+            // Восстанавливаем музыку меню (не перезагружаем, продолжаем воспроизведение)
+            if (sounds.menuMusic.paused && audioSettings.musicEnabled) {
+                let track = audioSettings.selectedMenuMusic === 'random' ? getRandomTrack('menu') : audioSettings.selectedMenuMusic;
+                sounds.menuMusic.src = track;
                 sounds.menuMusic.loop = true;
                 sounds.menuMusic.play();
             }
+            
+            document.getElementById(id === 'menu' ? 'menu' : id === 'settings' ? 'settings-screen' : 'brawlers-screen').style.display = 'flex';
+            
             if (id === 'brawlers') renderList();
+            if (id === 'settings') initMusicSelectors();
         }
     }
 
@@ -708,39 +848,4 @@
         bullets.forEach(b => { ctx.fillStyle = b.special === 'poison' ? "#2ecc71" : b.isUlt ? "#ff00ff" : "white"; ctx.beginPath(); ctx.arc(b.x, b.y, b.size || 5, 0, 7); ctx.fill(); });
         zones.forEach(z => {
             if (z.type === 'gravity') ctx.fillStyle = "rgba(0,0,0,0.6)";
-            else if (z.type === 'mine') ctx.fillStyle = "rgba(255,0,0,0.5)";
-            else if (z.type === 'turret') ctx.fillStyle = "rgba(255,87,34,0.6)";
-            else ctx.fillStyle = "rgba(255,255,0,0.4)";
-            ctx.beginPath();
-            ctx.arc(z.x, z.y, z.r, 0, 7);
-            ctx.fill();
-        });
-        ctx.globalAlpha = 0.2;
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(joyL.x, joyL.y, 60, 0, 7);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(joyR.x, joyR.y, 60, 0, 7);
-        ctx.fill();
-        if (isUltReady) { ctx.globalAlpha = 0.6; ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(joyU.x, joyU.y, 50, 0, 7); ctx.fill(); }
-        ctx.globalAlpha = 1;
-    }
-
-    window.addEventListener('load', () => {
-        loadSettings();
-        setSoundVolume(sounds.menuMusic, audioSettings.musicVolumeMenu);
-        setSoundVolume(sounds.battleMusic, audioSettings.musicVolumeBattle);
-        
-        if (audioSettings.musicEnabled) {
-            sounds.menuMusic.src = getRandomTrack('menu');
-            sounds.menuMusic.loop = true;
-            sounds.menuMusic.play();
-        }
-        
-        sounds.battleMusic.loop = true;
-        renderList();
-    });
-</script>
-</body>
-</html>
+            else if (z.type === 'mine') ctx.fillStyle = "rgba(255,0,0,0.5
