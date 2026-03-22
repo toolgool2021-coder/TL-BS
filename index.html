@@ -26,6 +26,19 @@
         .pin-option { background: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #333; cursor: pointer; }
         .ai-btn { background: #ff4444 !important; color: white !important; margin-top: 10px; border-width: 3px; }
         
+        /* РЕЖИМЫ И КУБКИ */
+        #modes-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
+        .modes-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 1000px; }
+        .mode-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: 4px solid #ffcc00; padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; min-width: 200px; transition: transform 0.3s; }
+        .mode-card:hover { transform: scale(1.05); }
+        .mode-card h3 { font-size: 24px; margin: 0; }
+        .mode-card p { font-size: 14px; margin: 10px 0; }
+        
+        .cups-info { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); padding: 20px; border-radius: 15px; border: 3px solid #ffcc00; z-index: 40; }
+        .cups-info h4 { margin: 0 0 10px 0; font-size: 18px; }
+        .cup-item { display: flex; align-items: center; gap: 10px; margin: 5px 0; font-size: 16px; }
+        .cup-value { color: #ffcc00; font-weight: bold; font-size: 20px; }
+        
         /* НАСТРОЙКИ */
         #settings-screen { display: none; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a2e, #0f0f1e); }
         .settings-container { background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px; border: 3px solid #ffcc00; max-width: 400px; width: 90%; }
@@ -40,6 +53,8 @@
         .settings-buttons { display: flex; gap: 10px; margin-top: 20px; }
         .settings-buttons button { flex: 1; padding: 10px; font-size: 14px; }
         .settings-btn { position: absolute; top: 10px; right: 10px; background: #9c27b0; color: white; border: 3px solid black; padding: 8px 15px; border-radius: 8px; z-index: 40; cursor: pointer; font-weight: bold; }
+        
+        .game-info { position: absolute; top: 60px; left: 10px; background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 8px; border: 2px solid #fff; z-index: 30; pointer-events: none; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -50,16 +65,49 @@
     <h1>BRAWL STARS</h1>
     <h2 id="active-name">ШЕЛЛИ</h2>
     <div id="char-preview" style="width:100px; height:100px; border-radius:50%; border:5px solid white; background:#bc42f5;"></div>
-    <button class="play-btn btn" onclick="changeScreen('game')">ИГРАТЬ</button>
-    <button id="ai-toggle" class="btn ai-btn" onclick="toggleAI()">БОТ: ВЫКЛ</button>
+    <div class="cups-info">
+        <h4>🏆 КУБКИ</h4>
+        <div class="cup-item">
+            <span>Всего:</span>
+            <span class="cup-value" id="total-cups">0</span>
+        </div>
+        <div class="cup-item">
+            <span>Победы:</span>
+            <span class="cup-value" id="wins-cups">0</span>
+        </div>
+    </div>
+    <button class="play-btn btn" onclick="changeScreen('modes')">ВЫБРАТЬ РЕЖИМ</button>
     <button class="btn" style="margin-top:20px;" onclick="changeScreen('brawlers')">БОЙЦЫ</button>
+</div>
+
+<!-- ВЫБОР РЕЖИМА -->
+<div id="modes-screen" class="screen">
+    <h1 style="margin-bottom: 30px;">ВЫБЕРИ РЕЖИМ</h1>
+    <div class="modes-container">
+        <div class="mode-card" onclick="startGame('showdown')">
+            <h3>🌍 ШОУДАУН</h3>
+            <p>Боевой королевский режим</p>
+            <p>8 игроков на поле</p>
+        </div>
+        <div class="mode-card" onclick="startGame('brawlball')">
+            <h3>🏀 БРАУБОЛ</h3>
+            <p>Командный режим 3v3</p>
+            <p>Забей гол противнику!</p>
+        </div>
+        <div class="mode-card" onclick="startGame('classic')">
+            <h3>⚔️ КЛАССИКА</h3>
+            <p>1v1 Дуэль</p>
+            <p>Побеждай противников</p>
+        </div>
+    </div>
+    <button class="btn" style="margin-top: 40px; background: #ff6b6b;" onclick="changeScreen('menu')">НАЗАД</button>
 </div>
 
 <!-- ВЫБОР БОЙЦА -->
 <div id="brawlers-screen" class="screen">
     <h2>ВЫБЕРИ БОЙЦА</h2>
     <div class="scroll-container" id="list"></div>
-    <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">ВЫБРАТЬ</button>
+    <button class="btn" style="margin-top: 20px;" onclick="changeScreen('menu')">НАЗАД</button>
 </div>
 
 <!-- НАСТРОЙКИ -->
@@ -106,6 +154,10 @@
 <!-- HUD ИГРЫ -->
 <div id="hud">
     <button class="exit-btn" onclick="exitToMenu()">ВЫЙТИ</button>
+    <div class="game-info">
+        <div id="mode-display">Режим: КЛАССИКА</div>
+        <div id="enemy-name-display">Противник: БОТ</div>
+    </div>
     <div class="ult-container"><div id="ult-bar"></div></div>
     <div id="ammo-container" class="ammo-wrap"></div>
     <div class="pin-system">
@@ -125,11 +177,26 @@
 <script>
     // ========== ОСНОВНЫЕ ПЕРЕМЕННЫЕ ==========
     let gameActive = false;
-    let enemyAI = false;
+    let gameMode = 'classic'; // classic, showdown, brawlball
     let current = 'Shelly';
     let ultCharge = 0;
     let isUltReady = false;
     let ammo = 3;
+    
+    // Система кубков
+    let playerStats = {
+        totalCups: 0,
+        winsCups: 0,
+        wins: 0,
+        losses: 0
+    };
+    
+    // Информация про противников (ботов)
+    const BOT_NAMES = ['Гром', 'Эдгар', 'Барлей', 'Котар', 'Лион', 'Спайк', 'Сузи', 'Джесси'];
+    const BOT_BRAWLERS = ['Shelly', 'Colt', 'Bull', 'Darryl', 'Jessie', 'Edgar', 'Crow', 'Mortis'];
+    
+    let enemyBotName = BOT_NAMES[0];
+    let enemyBotBrawler = BOT_BRAWLERS[0];
     
     // Настройки звука
     let audioSettings = {
@@ -140,74 +207,57 @@
         sfxEnabled: true
     };
 
-    // ========== СПИСОК ВСЕХ МУЗЫК (КУДА ПИХАТь КАЖДУЮ) ==========
+    // ========== СПИСОК ВСЕХ МУЗЫК ==========
     const MUSIC_TRACKS = {
-        // МЕНЮ (Menu_1.m4a, Menu_2.ogx, Menu_3.ogx, Menu_4.ogx, Menu_5.ogx, Menu_6.ogx, Menu_7.ogx, Menu_8.ogx)
         menu: [
             'Song/Menu_1.m4a',
-            'Song/Menu_2.ogx',
-            'Song/Menu_3.ogx',
-            'Song/Menu_4.ogx',
-            'Song/Menu_5.ogx',
-            'Song/Menu_6.ogx',
-            'Song/Menu_7.ogx',
-            'Song/Menu_8.ogx'
+            'Song/Menu_2.ogg',
+            'Song/Menu_3.ogg',
+            'Song/Menu_4.ogg',
+            'Song/Menu_5.ogg',
+            'Song/Menu_6.ogg',
+            'Song/Menu_7.ogg',
+            'Song/Menu_8.ogg'
         ],
         
-        // БОЙ (Fight_1.mp3, Fight_2.mp3, Fight_3.mp3, Fight_4.mp3, Fight_4.ogx, Fight_5.ogx и т.д.)
         battle: [
             'Song/Fight_1.mp3',
             'Song/Fight_2.mp3',
             'Song/Fight_3.mp3',
             'Song/Fight_4.mp3',
-            'Song/Fight_4.ogx',
-            'Song/Fight_5.ogx',
-            'Song/Fight_6.ogx',
-            'Song/Fight_7.ogx',
-            'Song/Fight_8.ogx',
-            'Song/Fight_9.ogx',
-            'Song/Fight_10.ogx',
-            'Song/Fight_11.ogx',
-            'Song/Fight_12.ogx'
+            'Song/Fight_4.ogg',
+            'Song/Fight_5.ogg',
+            'Song/Fight_6.ogg',
+            'Song/Fight_7.ogg',
+            'Song/Fight_8.ogg',
+            'Song/Fight_9.ogg',
+            'Song/Fight_10.ogg',
+            'Song/Fight_11.ogg',
+            'Song/Fight_12.ogg'
         ],
         
-        // КЛИК (Menu_click.ogx)
-        click: ['Song/Menu_click.ogx'],
+        click: [
+            'Song/Menu_click.ogg',
+            'Song/Button.ogg'
+        ],
         
-        // ВЫСТРЕЛ (Goal.ogx, Button.ogx, Drop_box.ogx)
         shoot: [
-            'Song/Goal.ogx',
-            'Song/Button.ogx',
-            'Song/Drop_box.ogx'
+            'Song/Goal.ogg',
+            'Song/Drop_box.ogg',
+            'Song/Button.ogg'
         ],
         
-        // УЛЬТИМАТИВНОЕ УМЕНИЕ (Ulti_ready.ogx, Victory.ogx, Reveal_epic_card.ogx)
         ult: [
-            'Song/Ulti_ready.ogx',
-            'Song/Victory.ogx',
-            'Song/Reveal_epic_card.ogx'
+            'Song/Ulti_ready.ogg',
+            'Song/Victory.ogg',
+            'Song/Reveal_epic_card.ogg'
         ],
         
-        // ПОПАДАНИЕ (Victory.ogx, Win_screen.ogx, Doubletakedown_vo.ogx)
         hit: [
-            'Song/Victory.ogx',
-            'Song/Win_screen.ogx',
-            'Song/Doubletakedown_vo.ogx'
-        ],
-        
-        // ДОПОЛНИТЕЛЬНО
-        load: ['Song/Load_home_screen.ogx'],
-        panic: ['Song/Panic_time.ogx'],
-        shop: ['Song/Shop.ogx'],
-        characterDrop: ['Song/Сharacter_drops.ogx'],
-        overtime: ['Song/Overtime.ogx'],
-        passBy: ['Song/Pass_buy.ogx'],
-        revealEpic: ['Song/Reveal_epic_card.ogx'],
-        revealLegendary: ['Song/Reveal_legendary_card.ogx'],
-        revealRare: ['Song/Reveal_rare_card.ogx'],
-        selectBrawler: ['Song/Select_brawler.ogx'],
-        showingPlayers: ['Song/Showing_players.mp3'],
-        showingPlayersBefore: ['Song/Showing_players_before_the_match.mp3']
+            'Song/Victory.ogg',
+            'Song/Win_screen.ogg',
+            'Song/Doubletakedown_vo.ogg'
+        ]
     };
 
     // ========== ЗВУКОВАЯ СИСТЕМА ==========
@@ -220,19 +270,16 @@
         hit: new Audio()
     };
 
-    // Установить громкость
     function setSoundVolume(sound, volume) {
         sound.volume = volume / 100;
     }
 
-    // Получить случайный трек из списка
     function getRandomTrack(trackType) {
         const tracks = MUSIC_TRACKS[trackType] || [];
-        if (tracks.length === 0) return 'Song/Menu_2.ogx';
+        if (tracks.length === 0) return 'Song/Menu_2.ogg';
         return tracks[Math.floor(Math.random() * tracks.length)];
     }
 
-    // Воспроизвести звук эффекта
     function playSound(type) {
         if (!audioSettings.sfxEnabled) return;
         let sound = sounds[type];
@@ -282,6 +329,47 @@
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+
+    // ========== ФУНКЦИИ РЕЖИМОВ ==========
+    function startGame(mode) {
+        gameMode = mode;
+        
+        // Выбираем случайного бота
+        const randomIndex = Math.floor(Math.random() * BOT_NAMES.length);
+        enemyBotName = BOT_NAMES[randomIndex];
+        enemyBotBrawler = BOT_BRAWLERS[randomIndex];
+        
+        // Обновляем дисплей
+        document.getElementById('mode-display').textContent = 
+            gameMode === 'showdown' ? 'Режим: ШОУДАУН' :
+            gameMode === 'brawlball' ? 'Режим: БРАУБОЛ' : 'Режим: КЛАССИКА';
+        document.getElementById('enemy-name-display').textContent = `Противник: ${enemyBotName}`;
+        
+        changeScreen('game');
+    }
+
+    function updateCupsDisplay() {
+        document.getElementById('total-cups').textContent = playerStats.totalCups;
+        document.getElementById('wins-cups').textContent = playerStats.winsCups;
+    }
+
+    function addCups(amount) {
+        playerStats.totalCups += amount;
+        updateCupsDisplay();
+        saveStats();
+    }
+
+    function saveStats() {
+        localStorage.setItem('playerStats', JSON.stringify(playerStats));
+    }
+
+    function loadStats() {
+        const saved = localStorage.getItem('playerStats');
+        if (saved) {
+            playerStats = JSON.parse(saved);
+            updateCupsDisplay();
+        }
+    }
 
     // ========== ФУНКЦИИ НАСТРОЕК ==========
     function changeMusicVolume(type, value) {
@@ -381,14 +469,6 @@
     }
 
     // ========== ФУНКЦИИ ИГРЫ ==========
-    function toggleAI() {
-        enemyAI = !enemyAI;
-        const btn = document.getElementById('ai-toggle');
-        btn.innerText = enemyAI ? "БОТ: ВКЛ" : "БОТ: ВЫКЛ";
-        btn.style.background = enemyAI ? "#00ff00" : "#ff4444";
-        playSound('click');
-    }
-
     function togglePinMenu() {
         const m = document.getElementById('pin-menu');
         m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
@@ -438,20 +518,37 @@
         } else {
             canvas.style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            document.getElementById(id === 'menu' ? 'menu' : id === 'settings' ? 'settings-screen' : 'brawlers-screen').style.display = 'flex';
+            
+            if (id === 'menu') {
+                document.getElementById('menu').style.display = 'flex';
+            } else if (id === 'modes') {
+                document.getElementById('modes-screen').style.display = 'flex';
+            } else if (id === 'brawlers') {
+                document.getElementById('brawlers-screen').style.display = 'flex';
+                renderList();
+            } else if (id === 'settings') {
+                document.getElementById('settings-screen').style.display = 'flex';
+            }
+            
             sounds.battleMusic.pause();
             
             if (audioSettings.musicEnabled && id !== 'settings') {
                 sounds.menuMusic.src = getRandomTrack('menu');
                 sounds.menuMusic.play();
             }
-            if (id === 'brawlers') renderList();
         }
     }
 
     function exitToMenu() {
         gameActive = false;
         pip.active = false;
+        
+        // Даём награду за победу
+        if (gameMode === 'classic' && enemy.hp > 0) {
+            playerStats.wins++;
+            addCups(10); // 10 кубков за победу
+        }
+        
         changeScreen('menu');
     }
 
@@ -594,9 +691,16 @@
         enemy.hp -= dmg;
         playSound('hit');
         if (enemy.hp <= 0) {
-            enemy.hp = enemy.maxHp;
-            enemy.x = canvas.width / 2;
-            enemy.y = 150;
+            // Победа!
+            playerStats.wins++;
+            playerStats.winsCups += 30; // 30 кубков за победу
+            playerStats.totalCups += 30;
+            alert(`Победа! +30 кубков`);
+            updateCupsDisplay();
+            saveStats();
+            gameActive = false;
+            exitToMenu();
+            return;
         }
         if (canCharge && ultCharge < 100) { ultCharge += BRAWLERS[current].ultChargeRate; }
     }
@@ -642,10 +746,37 @@
         if (p.boostTimer > 0) { p.boostTimer--; if (p.boostTimer <= 0) p.speedMult = 1; }
         if (p.shield > 0) p.shield--;
         [activePin, enemyPin].forEach(p => { if (p.timer > 0) { p.timer--; p.scale += (p.timer > 300 ? 1.2 : 1.0 - p.scale) * 0.2; } else p.scale = 0; });
-        if (enemyAI) {
-            let d = Math.hypot(p.x - enemy.x, p.y - enemy.y);
-            if (d > 160) { let a = Math.atan2(p.y - enemy.y, p.x - enemy.x); enemy.x += Math.cos(a) * 1.5; enemy.y += Math.sin(a) * 1.5; }
+        
+        // ИИ противника - атакует случайно
+        if (Math.random() < 0.02) {
+            let targetAngle = Math.atan2(p.y - enemy.y, p.x - enemy.x);
+            // Делаем по некоторую прогноз атаки
+            targetAngle += (Math.random() - 0.5) * 0.5; // Небольшая погрешность
+            // Противник выпускает пулю
+            for (let i = -1; i <= 1; i++) {
+                bullets.push({
+                    x: enemy.x,
+                    y: enemy.y,
+                    vx: Math.cos(targetAngle + i * 0.2) * 10,
+                    vy: Math.sin(targetAngle + i * 0.2) * 10,
+                    life: 100,
+                    isUlt: false,
+                    size: 5,
+                    type: 'enemy_bullet',
+                    special: '',
+                    angle: targetAngle
+                });
+            }
         }
+        
+        // Движение противника
+        let d = Math.hypot(p.x - enemy.x, p.y - enemy.y);
+        if (d > 200) {
+            let a = Math.atan2(p.y - enemy.y, p.x - enemy.x);
+            enemy.x += Math.cos(a) * 2;
+            enemy.y += Math.sin(a) * 2;
+        }
+        
         if (pip.active) {
             if (joyL.active) { let dx = joyL.cx - joyL.x, dy = joyL.cy - joyL.y; pip.angle = Math.atan2(dy, dx); }
             pip.x += Math.cos(pip.angle) * 7;
@@ -660,6 +791,7 @@
             let dx = joyL.cx - joyL.x, dy = joyL.cy - joyL.y, dist = Math.hypot(dx, dy);
             if (dist > 5) { p.x += (dx / dist) * BRAWLERS[current].speed * p.speedMult; p.y += (dy / dist) * BRAWLERS[current].speed * p.speedMult; }
         }
+        
         bullets.forEach((b, i) => {
             if (b.type === 'nani') {
                 b.progress += 0.035;
@@ -685,14 +817,32 @@
                 if (b.special === 'bounce') { if (b.x < 0 || b.x > canvas.width) b.vx *= -1; if (b.y < 0 || b.y > canvas.height) b.vy *= -1; }
                 if (b.special === 'bubble') { if (b.x < 0 || b.x > canvas.width) b.vx *= -1; if (b.y < 0 || b.y > canvas.height) b.vy *= -1; }
             }
-            if (Math.hypot(b.x - enemy.x, b.y - enemy.y) < 30) {
+            
+            // Попадание по противнику
+            if (b.type !== 'enemy_bullet' && Math.hypot(b.x - enemy.x, b.y - enemy.y) < 30) {
                 if (b.special === 'pull') { enemy.x = p.x; enemy.y = p.y; }
                 if (b.special === 'poison') { let c = 0; let poi = setInterval(() => { hitEnemy(150, false); if (++c > 5) clearInterval(poi); }, 500); }
                 if (b.special === 'energy') { hitEnemy(800, true); }
                 hitEnemy(b.special === 'gene_split' ? 150 : 400, !b.isUlt);
                 if (b.special !== 'bubble' && b.special !== 'bounce') bullets.splice(i, 1);
             }
+            
+            // Попадание по игроку (от противника)
+            if (b.type === 'enemy_bullet' && Math.hypot(b.x - p.x, b.y - p.y) < 22) {
+                if (p.shield <= 0) {
+                    p.hp = (p.hp || 30000) - 200;
+                    if (p.hp <= 0) {
+                        playerStats.losses++;
+                        alert(`Поражение!`);
+                        saveStats();
+                        gameActive = false;
+                        exitToMenu();
+                    }
+                }
+                bullets.splice(i, 1);
+            }
         });
+
         zones.forEach((z, i) => {
             if (z.type === 'gravity') { enemy.x += (z.x - enemy.x) * 0.1; enemy.y += (z.y - enemy.y) * 0.1; if (z.life === 1) hitEnemy(2000, false); }
             if (z.type === 'stun' && Math.hypot(enemy.x - z.x, enemy.y - z.y) < z.r) hitEnemy(10, false);
@@ -701,6 +851,7 @@
             if (Math.hypot(enemy.x - z.x, enemy.y - z.y) < z.r) hitEnemy(5, false);
             if (--z.life <= 0) zones.splice(i, 1);
         });
+
         updateUI();
         draw();
         requestAnimationFrame(update);
@@ -725,62 +876,17 @@
                 ctx.fill();
             } else { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(angle); ctx.fillRect(0, -20, 350, 40); ctx.restore(); }
         }
-        ctx.fillStyle = "red";
+        
+        // Рисуем противника
+        ctx.fillStyle = BRAWLERS[enemyBotBrawler]?.color || "red";
         ctx.beginPath();
         ctx.arc(enemy.x, enemy.y, 30, 0, 7);
         ctx.fill();
         ctx.fillStyle = "lime";
         ctx.fillRect(enemy.x - 40, enemy.y - 50, (enemy.hp / 30000) * 80, 8);
-        if (pip.active) { ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(pip.x, pip.y, 15, 0, 7); ctx.fill(); }
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.scale(p.scale, p.scale);
-        if (p.shield > 0) { ctx.strokeStyle = "#4caf50"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(0, 0, 30, 0, 7); ctx.stroke(); }
-        if (p.boostTimer > 0) { ctx.shadowBlur = 15; ctx.shadowColor = "yellow"; ctx.strokeStyle = "yellow"; ctx.strokeRect(-22, -22, 44, 44); }
-        ctx.fillStyle = BRAWLERS[current].color;
-        ctx.beginPath();
-        ctx.arc(0, 0, 22, 0, 7);
-        ctx.fill();
-        ctx.restore();
-        drawPin(p.x, p.y, activePin);
-        drawPin(enemy.x, enemy.y, enemyPin);
-        bullets.forEach(b => { ctx.fillStyle = b.special === 'poison' ? "#2ecc71" : b.isUlt ? "#ff00ff" : "white"; ctx.beginPath(); ctx.arc(b.x, b.y, b.size || 5, 0, 7); ctx.fill(); });
-        zones.forEach(z => {
-            if (z.type === 'gravity') ctx.fillStyle = "rgba(0,0,0,0.6)";
-            else if (z.type === 'mine') ctx.fillStyle = "rgba(255,0,0,0.5)";
-            else if (z.type === 'turret') ctx.fillStyle = "rgba(255,87,34,0.6)";
-            else ctx.fillStyle = "rgba(255,255,0,0.4)";
-            ctx.beginPath();
-            ctx.arc(z.x, z.y, z.r, 0, 7);
-            ctx.fill();
-        });
-        ctx.globalAlpha = 0.2;
+        
+        // Имя противника
         ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(joyL.x, joyL.y, 60, 0, 7);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(joyR.x, joyR.y, 60, 0, 7);
-        ctx.fill();
-        if (isUltReady) { ctx.globalAlpha = 0.6; ctx.fillStyle = "yellow"; ctx.beginPath(); ctx.arc(joyU.x, joyU.y, 50, 0, 7); ctx.fill(); }
-        ctx.globalAlpha = 1;
-    }
-
-    // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
-    window.addEventListener('load', () => {
-        loadSettings();
-        setSoundVolume(sounds.menuMusic, audioSettings.musicVolumeMenu);
-        setSoundVolume(sounds.battleMusic, audioSettings.musicVolumeBattle);
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
         
-        if (audioSettings.musicEnabled) {
-            sounds.menuMusic.src = getRandomTrack('menu');
-            sounds.menuMusic.loop = true;
-            sounds.menuMusic.play();
-        }
-        
-        sounds.battleMusic.loop = true;
-        renderList();
-    });
-</script>
-</body>
-</html>
